@@ -101,15 +101,15 @@ module NForm
       select(key,options: options, label: label)
     end
 
-    def date_input(k, label: nil, start_year: nil, end_year: nil)
+    def date_input(k, label: nil, start_year: nil, end_year: nil, default:{})
       start_year ||= Date.today.year
       end_year ||= start_year+20
       val = get_value(object,k)
       tag :div, class: "date-input" do
         njoin label_for(nil,text:(label||k.to_s.titleize)),
-              tag(:input, date_attrs(k,:month,"MM",01,12,get_value(val,:month))),
-              tag(:input, date_attrs(k,:day,"DD",01,31,get_value(val,:day))),
-              tag(:input, date_attrs(k,:year,"YYYY",start_year,end_year,get_value(val,:year)))
+              tag(:input, date_attrs(k,:month,"MM",01,12,get_value(val,:month, default[:month]))),
+              tag(:input, date_attrs(k,:day,"DD",01,31,get_value(val,:day, default[:day]))),
+              tag(:input, date_attrs(k,:year,"YYYY",start_year,end_year,get_value(val,:year, default[:year])))
       end
     end
 
@@ -135,7 +135,7 @@ module NForm
       end
     end
 
-    def get_value(object,key)
+    def get_value(object,key,default=nil)
       if object.nil?
         nil
       elsif object.respond_to?(key)
@@ -144,7 +144,7 @@ module NForm
         object.fetch(key,nil)
       else
         raise BuilderError, "Undefined object method: #{key}"
-      end
+      end or default
     end
   end
 

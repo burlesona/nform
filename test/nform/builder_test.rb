@@ -218,6 +218,16 @@ describe NForm::Builder do
               %Q|</div>|
         assert_equal out, @form.date_input(:a_hash)
       end
+
+      it "should make a date input with default values" do
+        out = %Q|<div class="date-input">\n|+
+              %Q|<label>A Hash</label>\n|+
+              %Q|<input class="date-month" type="number" name="builder_tester[a_hash][month]" placeholder="MM" min="1" max="12" step="1" value="1">\n|+
+              %Q|<input class="date-day" type="number" name="builder_tester[a_hash][day]" placeholder="DD" min="1" max="31" step="1" value="1">\n|+
+              %Q|<input class="date-year" type="number" name="builder_tester[a_hash][year]" placeholder="YYYY" min="2015" max="2035" step="1" value="2015">\n|+
+              %Q|</div>|
+        assert_equal out, @form.date_input(:a_hash, default:{day:1,month:1,year:2015})
+      end
     end
   end
 end
