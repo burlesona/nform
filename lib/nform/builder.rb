@@ -32,8 +32,10 @@ module NForm
     def object_name
       if object.is_a?(Symbol)
         object.to_s
+      elsif object.respond_to?(:model)
+        object.model.to_s.demodulize.underscore
       else
-        object.class.name.demodulize.underscore
+        object.class.to_s.demodulize.underscore
       end
     end
 
