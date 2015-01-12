@@ -94,10 +94,6 @@ describe NForm::Builder do
       assert_equal "Create Builder Tester", @form.title
     end
 
-    it "should make a submit button" do
-      assert_equal "<button>Create</button>", @form.submit_button
-    end
-
     it "should make a text_field" do
       out = %Q|<label for="a-thing">A Thing</label>\n| +
             %Q|<input type="text" id="a-thing" name="builder_tester[a_thing]" value="foobar">|
@@ -254,6 +250,18 @@ describe NForm::Builder do
               %Q|</div>|
         assert_equal out, @form.date_input(:a_hash, default:{day:1,month:1,year:2015})
       end
+    end
+
+    it "should make a submit button" do
+      assert_equal "<button>Create</button>", @form.submit_button
+    end
+
+    it "should make a submit button that says Save for not new objects" do
+      tester = BuilderTester.new(false)
+      assert_equal false, tester.new?
+      form = NForm::Builder.new(tester)
+      assert_equal false, form.new_object?
+      assert_equal "<button>Save</button>", form.submit_button
     end
   end
 end

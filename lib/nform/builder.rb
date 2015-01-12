@@ -26,7 +26,7 @@ module NForm
     end
 
     def new_object?
-      @object.is_a?(Symbol) || object.new?
+      object.respond_to?(:new?) ? object.new? : true
     end
 
     def object_name
@@ -115,7 +115,7 @@ module NForm
     end
 
     def submit_button
-      tag(:button){new_object? ? "Create" : "Save"}
+      tag(:button){ new_object? ? "Create" : "Save" }
     end
 
     private
