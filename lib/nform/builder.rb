@@ -9,7 +9,7 @@ module NForm
       @object = object
       @form_id = id
       @action = action
-      @method = method
+      @http_method = method
     end
 
     def form_id
@@ -21,8 +21,8 @@ module NForm
       "/#{collection_name.dasherize}" + (new_object? ? "" : "/#{object.id}")
     end
 
-    def method
-      @method || (new_object? ? "POST" : "PATCH")
+    def http_method
+      @http_method || (new_object? ? "POST" : "PATCH")
     end
 
     def new_object?
@@ -42,7 +42,7 @@ module NForm
     end
 
     def method_tag
-      tag(:input, type:"hidden", name:"_method", value:method) if method != "POST"
+      tag(:input, type:"hidden", name:"_method", value:http_method) if http_method != "POST"
     end
 
     def render
