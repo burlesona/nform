@@ -5,6 +5,5 @@ module NForm
 end
 
 require 'nform/helpers'
-require 'nform/inflections'
 require 'nform/html'
 require 'nform/builder'

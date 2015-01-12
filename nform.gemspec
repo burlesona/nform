@@ -9,4 +9,5 @@ Gem::Specification.new do |s|
   s.files       = Dir["{lib}/**/*.rb"]
   s.homepage    = 'http://github.com/burlesona/nform'
   s.license     = 'MIT'
+  s.add_runtime_dependency 'activesupport', '>= 4.0.0'
 end

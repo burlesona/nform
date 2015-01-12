@@ -1,6 +1,7 @@
+require 'active_support/core_ext/string'
+
 module NForm
   class Builder
-    include Inflections
     include HTML
 
     attr_reader :object
@@ -12,12 +13,12 @@ module NForm
     end
 
     def form_id
-      @form_id || dasherize(object_name)
+      @form_id || object_name.dasherize
     end
 
     def action
       @action or
-      "/#{dasherize(collection_name)}" + (new_object? ? "" : "/#{object.id}")
+      "/#{collection_name.dasherize}" + (new_object? ? "" : "/#{object.id}")
     end
 
     def method
@@ -32,12 +33,12 @@ module NForm
       if object.is_a?(Symbol)
         object.to_s
       else
-        underscore(demodulize(object.class.name))
+        object.class.name.demodulize.underscore
       end
     end
 
     def collection_name
-      pluralize(object_name)
+      object_name.pluralize
     end
 
     def method_tag
@@ -52,7 +53,7 @@ module NForm
     end
 
     def title
-      sjoin (new_object? ? "Create" : "Edit"), titleize(object_name)
+      sjoin (new_object? ? "Create" : "Edit"), object_name.titleize
     end
 
     def param(*args)
@@ -60,11 +61,11 @@ module NForm
     end
 
     def label_for(k, text: nil)
-      tag(:label, for: dasherize(k)){ text || titleize(k) }
+      tag(:label, for: k.to_s.dasherize){ text || k.to_s.titleize }
     end
 
     def input_for(k, type: "text")
-      tag(:input, type:type, id:dasherize(k), name:param(k), value:object.send(k))
+      tag(:input, type:type, id:k.to_s.dasherize, name:param(k), value:object.send(k))
     end
 
     def text_field(k)
@@ -78,14 +79,14 @@ module NForm
     def text_area(k)
       njoin(
         label_for(k),
-        tag(:textarea, id:dasherize(k), name:param(k)){"\n#{object.send(k)}\n"}
+        tag(:textarea, id:k.to_s.dasherize, name:param(k)){"\n#{object.send(k)}\n"}
       )
     end
 
     def select(k, options:, label: nil)
       njoin(
         label_for(k, text: label),
-        tag(:select, id:dasherize(k), name:param(k)){
+        tag(:select, id:k.to_s.dasherize, name:param(k)){
           njoin options.map{|k,v| tag(:option, value: k){v ? v : k}}
         }
       )
@@ -103,7 +104,7 @@ module NForm
       end_year ||= start_year+20
       val = get_value(object,k)
       tag :div, class: "date-input" do
-        njoin label_for(nil,text:(label||titleize(k))),
+        njoin label_for(nil,text:(label||k.to_s.titleize)),
               tag(:input, date_attrs(k,:month,"MM",01,12,get_value(val,:month))),
               tag(:input, date_attrs(k,:day,"DD",01,31,get_value(val,:day))),
               tag(:input, date_attrs(k,:year,"YYYY",start_year,end_year,get_value(val,:year)))
@@ -122,11 +123,11 @@ module NForm
     private
     def detect_association_name(assoc)
       if assoc.respond_to?(:name)
-        demodulize(assoc.name)
+        assoc.name.demodulize
       elsif assoc.respond_to?(:model)
-        demodulize(assoc.model.name)
+        assoc.model.name.demodulize
       elsif assoc.is_a?(Enumerable)
-        demodulize(assoc.first.class.name)
+        assoc.first.class.name.demodulize
       else
         raise BuilderError, "Unable to determine association name"
       end
