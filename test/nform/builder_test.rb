@@ -58,8 +58,21 @@ describe NForm::Builder do
       assert_equal out, form_view(:test)
     end
 
+    it "should override object name if object responds to object name" do
+      SomeFoodle = Class.new(BuilderTester) do
+        def object_name
+          "foodle"
+        end
+      end
+      out = %Q|<form id="foodle" action="/foodles" method="POST">\n|+
+            %Q|<label for="a-thing">A Thing</label>\n|+
+            %Q|<input type="text" id="a-thing" name="foodle[a_thing]" value="foobar">\n|+
+            %Q|</form>|
+      assert_equal out, form_view(SomeFoodle.new){|f| f.text_field(:a_thing) }
+    end
+
     it "should override object name if object responds to model" do
-      ExampleObject = Class.new(BuilderTester) do
+      SomeFoo = Class.new(BuilderTester) do
         def model
           "Amazing::Foo"
         end
@@ -68,7 +81,7 @@ describe NForm::Builder do
             %Q|<label for="a-thing">A Thing</label>\n|+
             %Q|<input type="text" id="a-thing" name="foo[a_thing]" value="foobar">\n|+
             %Q|</form>|
-      assert_equal out, form_view(ExampleObject.new){|f| f.text_field(:a_thing) }
+      assert_equal out, form_view(SomeFoo.new){|f| f.text_field(:a_thing) }
     end
   end
 

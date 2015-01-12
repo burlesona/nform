@@ -30,13 +30,7 @@ module NForm
     end
 
     def object_name
-      if object.is_a?(Symbol)
-        object.to_s
-      elsif object.respond_to?(:model)
-        object.model.to_s.demodulize.underscore
-      else
-        object.class.to_s.demodulize.underscore
-      end
+      @object_name || detect_object_name(object).underscore
     end
 
     def collection_name
@@ -97,7 +91,7 @@ module NForm
     end
 
     def association_select(association,key_method: :id, label_method: :name)
-      label = detect_association_name(association)
+      label = detect_object_name(association)
       key = (label.downcase + "_id").to_sym
       options = Hash[ association.map{|i| [i.send(key_method), i.send(label_method)]}]
       select(key,options: options, label: label)
@@ -125,16 +119,20 @@ module NForm
     end
 
     private
-    def detect_association_name(assoc)
-      if assoc.respond_to?(:name)
-        assoc.name.demodulize
-      elsif assoc.respond_to?(:model)
-        assoc.model.name.demodulize
-      elsif assoc.is_a?(Enumerable)
-        assoc.first.class.name.demodulize
+    def detect_object_name(o)
+      if o.is_a?(Symbol)
+        o.to_s
+      elsif o.respond_to?(:name)
+        o.name
+      elsif o.respond_to?(:object_name)
+        o.object_name
+      elsif o.respond_to?(:model)
+        o.model
+      elsif o.is_a?(Enumerable)
+        detect_object_name(o.first)
       else
-        raise BuilderError, "Unable to determine association name"
-      end
+        o.class
+      end.to_s.demodulize
     end
 
     def get_value(object,key,default=nil)
