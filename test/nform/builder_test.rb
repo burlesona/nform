@@ -78,6 +78,18 @@ describe NForm::Builder do
       assert_equal out, @form.text_field(:a_thing)
     end
 
+    it "should make a text_field with default value" do
+      out = %Q|<label for="a-nil">A Nil</label>\n| +
+            %Q|<input type="text" id="a-nil" name="builder_tester[a_nil]" value="testery">|
+      assert_equal out, @form.text_field(:a_nil, default: "testery")
+    end
+
+    it "should make a text_field with custom label" do
+      out = %Q|<label for="a-nil">Fooness</label>\n| +
+            %Q|<input type="text" id="a-nil" name="builder_tester[a_nil]">|
+      assert_equal out, @form.text_field(:a_nil, label: "Fooness")
+    end
+
     it "should make a hidden_field" do
       out = %Q|<input type="hidden" id="a-thing" name="builder_tester[a_thing]" value="foobar">|
       assert_equal out, @form.hidden_field(:a_thing)
@@ -89,6 +101,21 @@ describe NForm::Builder do
             %Q|foobar\n|+
             %Q|</textarea>|
       assert_equal out, @form.text_area(:a_thing)
+    end
+
+    it "should make a text_area with default value" do
+      out = %Q|<label for="a-nil">A Nil</label>\n|+
+            %Q|<textarea id="a-nil" name="builder_tester[a_nil]">\n|+
+            %Q|Foo!\n|+
+            %Q|</textarea>|
+      assert_equal out, @form.text_area(:a_nil, default: "Foo!")
+    end
+
+    it "should make a text_area with custom label" do
+      out = %Q|<label for="a-nil">Foo</label>\n|+
+            %Q|<textarea id="a-nil" name="builder_tester[a_nil]">|+
+            %Q|</textarea>|
+      assert_equal out, @form.text_area(:a_nil, label: "Foo")
     end
 
     it "should make a select field with options array" do

@@ -64,22 +64,24 @@ module NForm
       tag(:label, for: k.to_s.dasherize){ text || k.to_s.titleize }
     end
 
-    def input_for(k, type: "text")
-      tag(:input, type:type, id:k.to_s.dasherize, name:param(k), value:object.send(k))
+    def input_for(k, type: "text", default: nil)
+      val = object.send(k) || default
+      tag(:input, type:type, id:k.to_s.dasherize, name:param(k), value:val)
     end
 
-    def text_field(k)
-      njoin label_for(k), input_for(k)
+    def text_field(k, label: nil, default: nil)
+      njoin label_for(k,text:label), input_for(k,default:default)
     end
 
     def hidden_field(k)
       input_for(k, type: "hidden")
     end
 
-    def text_area(k)
+    def text_area(k, label: nil, default: nil)
+      val = object.send(k) || default
       njoin(
-        label_for(k),
-        tag(:textarea, id:k.to_s.dasherize, name:param(k)){"\n#{object.send(k)}\n"}
+        label_for(k, text:label),
+        tag(:textarea, id:k.to_s.dasherize, name:param(k)){ "\n#{val}\n" if val }
       )
     end
 
