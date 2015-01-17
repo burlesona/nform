@@ -122,7 +122,7 @@ module NForm
     def detect_object_name(o)
       if o.is_a?(Symbol)
         o.to_s
-      elsif o.respond_to?(:name)
+      elsif o.is_a?(Class)
         o.name
       elsif o.respond_to?(:object_name)
         o.object_name
