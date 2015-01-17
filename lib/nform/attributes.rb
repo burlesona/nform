@@ -1,3 +1,5 @@
+require 'active_support/core_ext/hash'
+
 module NForm
   module Attributes
     def attribute(name,coerce:nil,required:false,default:nil)
@@ -54,10 +56,11 @@ module NForm
     end
 
     module InstanceMethods
-      def initialize(**input)
-        require_attributes!(input)
+      def initialize(input={})
+        i = input.symbolize_keys
+        require_attributes!(i)
         self.class.define_attributes
-        set_attributes!(input)
+        set_attributes!(i)
         set_missing_defaults
       end
 

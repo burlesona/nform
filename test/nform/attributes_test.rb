@@ -26,6 +26,11 @@ describe NForm::Attributes do
       assert_equal nil, a.a_string
     end
 
+    it "should work with string attrs" do
+      a = Example.new 'sample' => 'foo'
+      assert_equal 'foo', a.sample
+    end
+
     it "should noop without coercion" do
       a = Example.new(sample: 1)
       assert_equal 1, a.sample
