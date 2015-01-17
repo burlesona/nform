@@ -88,4 +88,38 @@ describe NForm::Attributes do
       assert_equal nil, example.a_normal
     end
   end
+
+  describe "undefined attributes" do
+    class DefOnly
+      extend NForm::Attributes
+      attribute :a_thing
+    end
+    class DefOnlyExplicit
+      extend NForm::Attributes
+      undefined_attributes :raise
+      attribute :a_thing
+    end
+    class UndefOk
+      extend NForm::Attributes
+      undefined_attributes :ignore
+      attribute :a_thing
+    end
+
+    it "should raise ArgumentError when unspecified attributes are given" do
+      assert_raises(ArgumentError){ DefOnly.new(foo:1) }
+    end
+
+    it "should raise ArgumentError when unspecified attributes are given" do
+      assert_raises(ArgumentError){ DefOnlyExplicit.new(foo:1) }
+    end
+
+    it "should ignore unspecified attributes when so configured" do
+      ex = UndefOk.new(foo: 1)
+      assert_equal nil, ex.a_thing
+      assert_raises(NoMethodError) do
+        ex.foo
+      end
+    end
+
+  end
 end

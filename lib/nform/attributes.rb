@@ -18,6 +18,17 @@ module NForm
       @default_attributes ||= {}
     end
 
+    def undefined_attributes(option)
+      unless %i|raise ignore|.include?(option)
+        raise ArgumentError, "Unknown option `#{option}` for undefined attributes. Options are :raise or :ignore"
+      end
+      @undef_attr = option
+    end
+
+    def __undef_attr
+      @undef_attr ||= :raise
+    end
+
     def define_attributes
       attribute_set.each do |a,c|
         define_method(a) do
@@ -46,9 +57,7 @@ module NForm
       def initialize(**input)
         require_attributes!(input)
         self.class.define_attributes
-        input.each do |k,v|
-          send "#{k}=",v
-        end
+        set_attributes!(input)
         set_missing_defaults
       end
 
@@ -63,6 +72,15 @@ module NForm
         missing = (self.class.required_attributes - attrs.keys)
         if missing.any?
           raise ArgumentError, "Missing required attributes: #{missing.inspect}"
+        end
+      end
+
+      def set_attributes!(hash)
+        hash.each do |k,v|
+          if self.class.__undef_attr == :raise
+            raise ArgumentError, "Undefined attribute: #{k}" unless respond_to?("#{k}=")
+          end
+          send "#{k}=",v if respond_to?("#{k}=")
         end
       end
 
