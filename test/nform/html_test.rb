@@ -55,4 +55,9 @@ describe NForm::HTML do
     out = h.njoin("one","two",nil,"three")
     assert_equal "one\ntwo\nthree", out
   end
+
+  it "should generate boolean attributes" do
+    out = %Q|<option value="test" selected>Test</option>|
+    assert_equal out, h.tag(:option,value:"test",selected:true){ "Test" }
+  end
 end

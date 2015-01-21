@@ -2,6 +2,8 @@ module NForm
   # Helper Methods for generating HTML markup
   module HTML
     VOID_ELEMENTS = %i|area base br col embed hr img input keygen link meta param source track wbr|
+    BOOL_ATTRIBUTES = %i|allowfullscreen async autofocus autoplay checked compact controls declare default defaultchecked defaultmuted defaultselected defer disabled draggable enabled formnovalidate hidden indeterminate inert ismap itemscope loop multiple muted nohref noresize noshade novalidate nowrap open pauseonexit readonly required reversed scoped seamless selected sortable spellcheck translate truespeed typemustmatch visible|
+
     # Generate an HTML Tag
     def tag(name, attributes={}, &block)
       open = sjoin name, attrs(attributes)
@@ -18,8 +20,16 @@ module NForm
 
     def attrs(hash={})
       hash.delete_if{|k,v| v.nil? || v == "" }
-          .map{|k,v| %Q|#{attr_key(k)}="#{v}"| }
+          .map{|k,v| attr_string(k,v) }
           .join(" ")
+    end
+
+    def attr_string(k,v)
+      if BOOL_ATTRIBUTES.include?(k)
+        attr_key(k) if v
+      else
+        %Q|#{attr_key(k)}="#{v}"|
+      end
     end
 
     def attr_key(k)
