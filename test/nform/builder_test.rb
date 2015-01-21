@@ -1,9 +1,5 @@
 require 'test_helper'
 
-# Next Up:
-# - {year:,month:,day:} -> Date
-# - Date -> hash
-# - Date Inputs
 describe NForm::Builder do
   describe "new objects" do
     before do
@@ -264,6 +260,59 @@ describe NForm::Builder do
       form = NForm::Builder.new(tester)
       assert_equal false, form.new_object?
       assert_equal "<button>Save</button>", form.submit_button
+    end
+  end
+
+  describe "error handling" do
+    class ErrorTester < BuilderTester
+      def a_thing
+        "foo!"
+      end
+      def errors
+        {a_thing: "Big oopsie!", a_date: "Wrong date."}
+      end
+    end
+
+    before do
+      @form = NForm::Builder.new( ErrorTester.new )
+    end
+    it "should make a span.error with any error message matching the input key" do
+      out = %Q|<label for="a-thing">A Thing</label>\n| +
+            %Q|<input type="text" id="a-thing" name="error_tester[a_thing]" value="foo!">\n|+
+            %Q|<span class="error">Big oopsie!</span>|
+      assert_equal out, @form.text_field(:a_thing)
+    end
+
+    it "should show errors on text_area" do
+      out = %Q|<label for="a-thing">A Thing</label>\n|+
+            %Q|<textarea id="a-thing" name="error_tester[a_thing]">\n|+
+            %Q|foo!\n|+
+            %Q|</textarea>\n|+
+            %Q|<span class="error">Big oopsie!</span>|
+      assert_equal out, @form.text_area(:a_thing)
+    end
+
+    it "should show errors on select field" do
+      options = %w|one two three|
+      out = %Q|<label for="a-thing">A Thing</label>\n|+
+            %Q|<select id="a-thing" name="error_tester[a_thing]">\n|+
+            %Q|<option value="one">one</option>\n|+
+            %Q|<option value="two">two</option>\n|+
+            %Q|<option value="three">three</option>\n|+
+            %Q|</select>\n|+
+            %Q|<span class="error">Big oopsie!</span>|
+      assert_equal out, @form.select(:a_thing, options: options)
+    end
+
+    it "should show errors on a date input group" do
+      out = %Q|<div class="date-input">\n|+
+            %Q|<label>A Date</label>\n|+
+            %Q|<input class="date-month" type="number" name="error_tester[a_date][month]" placeholder="MM" min="1" max="12" step="1" value="12">\n|+
+            %Q|<input class="date-day" type="number" name="error_tester[a_date][day]" placeholder="DD" min="1" max="31" step="1" value="25">\n|+
+            %Q|<input class="date-year" type="number" name="error_tester[a_date][year]" placeholder="YYYY" min="2015" max="2035" step="1" value="2014">\n|+
+            %Q|<span class="error">Wrong date.</span>\n|+
+            %Q|</div>|
+      assert_equal out, @form.date_input(:a_date)
     end
   end
 end

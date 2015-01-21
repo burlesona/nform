@@ -41,6 +41,14 @@ module NForm
       tag(:input, type:"hidden", name:"_method", value:http_method) if http_method != "POST"
     end
 
+    def errors
+      @errors = if object.respond_to?(:errors)
+        object.errors
+      else
+        {}
+      end
+    end
+
     def render
       tag(:form, id: form_id, action:action, method:"POST") do
         body = yield(self) if block_given?
@@ -65,8 +73,12 @@ module NForm
       tag(:input, type:type, id:k.to_s.dasherize, name:param(k), value:val)
     end
 
+    def error_for(k)
+      tag(:span, class: 'error'){ errors[k] } if errors[k]
+    end
+
     def text_field(k, label: nil, default: nil)
-      njoin label_for(k,text:label), input_for(k,default:default)
+      njoin label_for(k,text:label), input_for(k,default:default), error_for(k)
     end
 
     def hidden_field(k)
@@ -77,7 +89,8 @@ module NForm
       val = object.send(k) || default
       njoin(
         label_for(k, text:label),
-        tag(:textarea, id:k.to_s.dasherize, name:param(k)){ "\n#{val}\n" if val }
+        tag(:textarea, id:k.to_s.dasherize, name:param(k)){ "\n#{val}\n" if val },
+        error_for(k)
       )
     end
 
@@ -86,7 +99,8 @@ module NForm
         label_for(k, text: label),
         tag(:select, id:k.to_s.dasherize, name:param(k)){
           njoin options.map{|value,text| option_for(k,value,text) }
-        }
+        },
+        error_for(k)
       )
     end
 
@@ -111,7 +125,8 @@ module NForm
         njoin label_for(nil,text:(label||k.to_s.titleize)),
               tag(:input, date_attrs(k,:month,"MM",01,12,get_value(val,:month, default[:month]))),
               tag(:input, date_attrs(k,:day,"DD",01,31,get_value(val,:day, default[:day]))),
-              tag(:input, date_attrs(k,:year,"YYYY",start_year,end_year,get_value(val,:year, default[:year])))
+              tag(:input, date_attrs(k,:year,"YYYY",start_year,end_year,get_value(val,:year, default[:year]))),
+              error_for(k)
       end
     end
 
