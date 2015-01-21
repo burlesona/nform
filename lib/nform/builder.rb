@@ -85,9 +85,15 @@ module NForm
       njoin(
         label_for(k, text: label),
         tag(:select, id:k.to_s.dasherize, name:param(k)){
-          njoin options.map{|k,v| tag(:option, value: k){v ? v : k}}
+          njoin options.map{|value,text| option_for(k,value,text) }
         }
       )
+    end
+
+    def option_for(k,value,text)
+      opts = {value: value}
+      opts[:selected] = true if object.send(k) == value
+      tag(:option, opts){text ? text : value}
     end
 
     def association_select(association,key_method: :id, label_method: :name)

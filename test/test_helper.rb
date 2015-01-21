@@ -39,6 +39,10 @@ class BuilderTester
     {year: a_date.year, month: a_date.month, day: a_date.day}
   end
 
+  def sample_id
+    1
+  end
+
   def new?
     @is_new
   end

@@ -174,7 +174,8 @@ describe NForm::Builder do
     it "should make an association select" do
       Sample = Class.new do
         def self.all
-          [OpenStruct.new(id: 1, name: "Tester")]
+          [OpenStruct.new(id: 1, name: "Tester"),
+           OpenStruct.new(id: 2, name: "Foobar")]
         end
         def self.first
           self.new
@@ -185,7 +186,8 @@ describe NForm::Builder do
       end
       out = %Q|<label for="sample-id">Sample</label>\n|+
             %Q|<select id="sample-id" name="builder_tester[sample_id]">\n|+
-            %Q|<option value="1">Tester</option>\n|+
+            %Q|<option value="1" selected>Tester</option>\n|+
+            %Q|<option value="2">Foobar</option>\n|+
             %Q|</select>|
       assert_equal out, @form.association_select(Sample)
     end
