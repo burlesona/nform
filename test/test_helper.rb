@@ -43,6 +43,9 @@ class BuilderTester
     1
   end
 
+  def password
+  end
+
   def new?
     @is_new
   end

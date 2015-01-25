@@ -81,6 +81,10 @@ module NForm
       njoin label_for(k,text:label), input_for(k,default:default), error_for(k)
     end
 
+    def password_field(k, label: nil)
+      njoin label_for(k,text:label), input_for(k,type:"password"), error_for(k)
+    end
+
     def hidden_field(k)
       input_for(k, type: "hidden")
     end
