@@ -275,12 +275,21 @@ describe NForm::Builder do
         "foo!"
       end
       def errors
-        {a_thing: "Big oopsie!", a_date: "Wrong date."}
+        {base: "A Test!", a_thing: "Big oopsie!", a_date: "Wrong date."}
       end
     end
 
     before do
       @form = NForm::Builder.new( ErrorTester.new )
+    end
+
+    it "should list base errors at the top of the form" do
+      out = %Q|<form id="error-tester" action="/error-testers" method="POST">\n| +
+            %Q|<ul class="base errors">\n| +
+            %Q|<li>A Test!</li>\n| +
+            %Q|</ul>\n| +
+            %Q|</form>|
+      assert_equal out, @form.render
     end
     it "should make a span.error with any error message matching the input key" do
       out = %Q|<label for="a-thing">A Thing</label>\n| +

@@ -49,10 +49,26 @@ module NForm
       end
     end
 
+    def base_errors
+      if e = errors[:base]
+        tag(:ul, class: 'base errors') do
+          if e.respond_to?(:map)
+            njoin e.map{|m| base_error(m) }
+          else
+            base_error(e)
+          end
+        end
+      end
+    end
+
+    def base_error(e)
+      tag(:li){ e }
+    end
+
     def render
       tag(:form, id: form_id, action:action, method:"POST") do
         body = yield(self) if block_given?
-        njoin(method_tag,body)
+        njoin(method_tag,base_errors,body)
       end
     end
 
