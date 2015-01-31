@@ -1,6 +1,8 @@
 # NForm
 
-TODO: Write a gem description
+A utility library for handling user input, forms, and the like.
+
+Requires Ruby >= 2.1.x.
 
 ## Installation
 
