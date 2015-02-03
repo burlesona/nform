@@ -115,8 +115,8 @@ module NForm
     end
 
     def bool_field(k, label: nil)
-      checked = (!object.send(k) || object.send(k) == "false") ? false : true
-      njoin label_for(k,text:label),
+      checked = ( !object.send(k) || object.send(k) == "false" ) ? false : true
+      njoin label_for(k,text: label),
             tag(:input, type:'hidden',name:param(k), value:"false"),
             tag(:input, type:'checkbox', id: k.to_s.dasherize, name:param(k), value:"true", checked:checked),
             error_for(k)
