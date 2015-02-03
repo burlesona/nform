@@ -142,6 +142,41 @@ describe NForm::Builder do
       assert_equal out, @form.text_area(:a_nil, label: "Foo")
     end
 
+    it "should make a boolean checkbox" do
+      out = %Q|<label for="a-nil">A Nil</label>\n|+
+            %Q|<input type="hidden" name="builder_tester[a_nil]" value="false">\n|+
+            %Q|<input type="checkbox" id="a-nil" name="builder_tester[a_nil]" value="true">|
+      assert_equal out, @form.bool_field(:a_nil)
+    end
+
+    it "should make a boolean checkbox checked" do
+      out = %Q|<label for="a-true">A True</label>\n|+
+            %Q|<input type="hidden" name="builder_tester[a_true]" value="false">\n|+
+            %Q|<input type="checkbox" id="a-true" name="builder_tester[a_true]" value="true" checked>|
+      assert_equal out, @form.bool_field(:a_true)
+    end
+
+    it "should make a false checkbox not checked" do
+      out = %Q|<label for="a-false">A False</label>\n|+
+            %Q|<input type="hidden" name="builder_tester[a_false]" value="false">\n|+
+            %Q|<input type="checkbox" id="a-false" name="builder_tester[a_false]" value="true">|
+      assert_equal out, @form.bool_field(:a_false)
+    end
+
+    it "should make a false string checkbox not checked" do
+      out = %Q|<label for="a-false-string">A False String</label>\n|+
+            %Q|<input type="hidden" name="builder_tester[a_false_string]" value="false">\n|+
+            %Q|<input type="checkbox" id="a-false-string" name="builder_tester[a_false_string]" value="true">|
+      assert_equal out, @form.bool_field(:a_false_string)
+    end
+
+    it "should make any other string checkbox checked" do
+      out = %Q|<label for="a-thing">A Thing</label>\n|+
+            %Q|<input type="hidden" name="builder_tester[a_thing]" value="false">\n|+
+            %Q|<input type="checkbox" id="a-thing" name="builder_tester[a_thing]" value="true" checked>|
+      assert_equal out, @form.bool_field(:a_thing)
+    end
+
     it "should make a select field with options array" do
       options = %w|one two three|
       out = %Q|<label for="a-thing">A Thing</label>\n|+

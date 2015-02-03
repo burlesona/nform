@@ -23,6 +23,18 @@ class BuilderTester
   def a_nil
   end
 
+  def a_true
+    true
+  end
+
+  def a_false
+    false
+  end
+
+  def a_false_string
+    "false"
+  end
+
   def a_thing
     "foobar"
   end

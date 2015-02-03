@@ -21,6 +21,7 @@ module NForm
     def attrs(hash={})
       hash.delete_if{|k,v| v.nil? || v == "" }
           .map{|k,v| attr_string(k,v) }
+          .compact
           .join(" ")
     end
 

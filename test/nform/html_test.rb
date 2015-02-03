@@ -60,4 +60,9 @@ describe NForm::HTML do
     out = %Q|<option value="test" selected>Test</option>|
     assert_equal out, h.tag(:option,value:"test",selected:true){ "Test" }
   end
+
+  it "should not leave whitespace on false boolean attributes" do
+    out = %Q|<option value="test">Test</option>|
+    assert_equal out, h.tag(:option,value:"test",selected:false){ "Test" }
+  end
 end
