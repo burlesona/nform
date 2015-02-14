@@ -1,5 +1,6 @@
 # NForm
 [![Build Status](https://travis-ci.org/burlesona/nform.svg?branch=master)](https://travis-ci.org/burlesona/nform)
+[![Code Climate](https://codeclimate.com/github/burlesona/nform/badges/gpa.svg)](https://codeclimate.com/github/burlesona/nform)
 
 A utility library for handling user input, forms, and the like.
 
