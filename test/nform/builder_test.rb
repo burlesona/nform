@@ -108,9 +108,9 @@ describe NForm::Builder do
       assert_equal out, @form.text_field(:a_nil, label: "Fooness")
     end
 
-    it "should make a text_field" do
+    it "should make a number field" do
       out = %Q|<label for="a-thing">A Thing</label>\n| +
-            %Q|<input type="number" id="a-thing" name="builder_tester[a_thing]" value="foobar">|
+            %Q|<input type="number" id="a-thing" name="builder_tester[a_thing]" value="foobar" pattern="\\d*">|
       assert_equal out, @form.number_field(:a_thing)
     end
 

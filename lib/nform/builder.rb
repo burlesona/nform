@@ -84,9 +84,10 @@ module NForm
       tag(:label, for: k.to_s.dasherize){ text || k.to_s.titleize }
     end
 
-    def input_for(k, type: "text", default: nil)
+    def input_for(k, type: "text", default: nil, **args)
       val = object.send(k) || default
-      tag(:input, type:type, id:k.to_s.dasherize, name:param(k), value:val)
+      opts = {type:type, id:k.to_s.dasherize, name:param(k), value:val}.merge(args)
+      tag(:input,opts)
     end
 
     def error_for(k)
@@ -98,7 +99,7 @@ module NForm
     end
 
     def number_field(k, label: nil, default: nil)
-      njoin label_for(k,text:label), input_for(k,type:'number',default:default), error_for(k)
+      njoin label_for(k,text:label), input_for(k,type:'number',default:default,pattern:'\d*'), error_for(k)
     end
 
     def password_field(k, label: nil)
