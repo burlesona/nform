@@ -11,8 +11,6 @@ module NForm
       if VOID_ELEMENTS.include?(name.to_sym)
         raise BuilderError, "Void elements cannot have content" if body
         "<#{open}>"
-      elsif body =~ /[<>]/
-        "<#{open}>\n#{body}\n</#{name}>"
       else
         "<#{open}>#{body}</#{name}>"
       end
@@ -37,12 +35,16 @@ module NForm
       k.is_a?(Symbol) ? k.to_s.gsub("_","-") : k
     end
 
+    def zjoin(*args)
+      args.delete_if{|a| a.nil? || a == ""}.join('')
+    end
+
     def sjoin(*args)
       args.delete_if{|a| a.nil? || a == ""}.join(' ')
     end
 
     def njoin(*args)
-      args.compact.join("\n")
+      args.delete_if{|a| a.nil? || a == ""}.join("\n")
     end
   end
 end

@@ -53,7 +53,7 @@ module NForm
       if e = errors[:base]
         tag(:ul, class: 'base errors') do
           if e.respond_to?(:map)
-            njoin e.map{|m| base_error(m) }
+            zjoin e.map{|m| base_error(m) }
           else
             base_error(e)
           end
@@ -68,7 +68,7 @@ module NForm
     def render
       tag(:form, id: form_id, action:action, method:"POST") do
         body = yield(self) if block_given?
-        njoin(method_tag,base_errors,body)
+        zjoin(method_tag,base_errors,body)
       end
     end
 
@@ -95,15 +95,15 @@ module NForm
     end
 
     def text_field(k, label: nil, default: nil)
-      njoin label_for(k,text:label), input_for(k,default:default), error_for(k)
+      zjoin label_for(k,text:label), input_for(k,default:default), error_for(k)
     end
 
     def number_field(k, label: nil, default: nil)
-      njoin label_for(k,text:label), input_for(k,type:'number',default:default,pattern:'\d*'), error_for(k)
+      zjoin label_for(k,text:label), input_for(k,type:'number',default:default,pattern:'\d*'), error_for(k)
     end
 
     def password_field(k, label: nil)
-      njoin label_for(k,text:label), input_for(k,type:"password"), error_for(k)
+      zjoin label_for(k,text:label), input_for(k,type:"password"), error_for(k)
     end
 
     def hidden_field(k)
@@ -112,26 +112,26 @@ module NForm
 
     def text_area(k, label: nil, default: nil)
       val = object.send(k) || default
-      njoin(
+      zjoin(
         label_for(k, text:label),
-        tag(:textarea, id:k.to_s.dasherize, name:param(k)){ "\n#{val}\n" if val },
+        tag(:textarea, id:k.to_s.dasherize, name:param(k)){ "#{val}" if val },
         error_for(k)
       )
     end
 
     def bool_field(k, label: nil)
       checked = ( !object.send(k) || object.send(k) == "false" ) ? false : true
-      njoin label_for(k,text: label),
+      zjoin label_for(k,text: label),
             tag(:input, type:'hidden',name:param(k), value:"false"),
             tag(:input, type:'checkbox', id: k.to_s.dasherize, name:param(k), value:"true", checked:checked),
             error_for(k)
     end
 
     def select(k, options:, label: nil)
-      njoin(
+      zjoin(
         label_for(k, text: label),
         tag(:select, id:k.to_s.dasherize, name:param(k)){
-          njoin options.map{|value,text| option_for(k,value,text) }
+          zjoin options.map{|value,text| option_for(k,value,text) }
         },
         error_for(k)
       )
@@ -155,7 +155,7 @@ module NForm
       end_year ||= start_year+20
       val = get_value(object,k)
       tag :div, class: "date-input" do
-        njoin label_for(nil,text:(label||k.to_s.titleize)),
+        zjoin label_for(nil,text:(label||k.to_s.titleize)),
               tag(:input, date_attrs(k,:month,"MM",01,12,get_value(val,:month, default[:month]))),
               tag(:input, date_attrs(k,:day,"DD",01,31,get_value(val,:day, default[:day]))),
               tag(:input, date_attrs(k,:year,"YYYY",start_year,end_year,get_value(val,:year, default[:year]))),

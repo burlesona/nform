@@ -43,7 +43,7 @@ describe NForm::HTML do
     out = h.tag :p, :class=>"super" do
       h.tag(:span){"Hello!"}
     end
-    assert_equal %Q|<p class="super">\n<span>Hello!</span>\n</p>|, out
+    assert_equal %Q|<p class="super"><span>Hello!</span></p>|, out
   end
 
   it "should not close self closing tags" do
