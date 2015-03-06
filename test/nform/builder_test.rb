@@ -183,56 +183,79 @@ describe NForm::Builder do
       assert_equal out, @form.bool_field(:a_thing)
     end
 
-    it "should make a select field with options array" do
-      options = %w|one two three|
-      out = %Q|<label for="a-thing">A Thing</label>|+
-            %Q|<select id="a-thing" name="builder_tester[a_thing]">|+
-            %Q|<option value="one">one</option>|+
-            %Q|<option value="two">two</option>|+
-            %Q|<option value="three">three</option>|+
-            %Q|</select>|
-      assert_equal out, @form.select(:a_thing, options: options)
-    end
-
-    it "should make a select field with options hash" do
-      options = {12 => "Acme Lawncare", 28 => "Foo Pest & Lawn"}
-      out = %Q|<label for="a-thing">A Thing</label>|+
-            %Q|<select id="a-thing" name="builder_tester[a_thing]">|+
-            %Q|<option value="12">Acme Lawncare</option>|+
-            %Q|<option value="28">Foo Pest & Lawn</option>|+
-            %Q|</select>|
-      assert_equal out, @form.select(:a_thing, options: options)
-    end
-
-    it "should make a select field with custom label" do
-      options = {12 => "Acme Lawncare", 28 => "Foo Pest & Lawn"}
-      out = %Q|<label for="a-thing">My Thing</label>|+
-            %Q|<select id="a-thing" name="builder_tester[a_thing]">|+
-            %Q|<option value="12">Acme Lawncare</option>|+
-            %Q|<option value="28">Foo Pest & Lawn</option>|+
-            %Q|</select>|
-      assert_equal out, @form.select(:a_thing, options: options, label: "My Thing")
-    end
-
-    it "should make an association select" do
-      Sample = Class.new do
-        def self.all
-          [OpenStruct.new(id: 1, name: "Tester"),
-           OpenStruct.new(id: 2, name: "Foobar")]
-        end
-        def self.first
-          self.new
-        end
-        def self.map &block
-          self.all.map &block
-        end
+    describe "select fields" do
+      it "should make a select field with options array" do
+        options = %w|one two three|
+        out = %Q|<label for="a-thing">A Thing</label>|+
+              %Q|<select id="a-thing" name="builder_tester[a_thing]">|+
+              %Q|<option value="one">one</option>|+
+              %Q|<option value="two">two</option>|+
+              %Q|<option value="three">three</option>|+
+              %Q|</select>|
+        assert_equal out, @form.select(:a_thing, options: options)
       end
-      out = %Q|<label for="sample-id">Sample</label>|+
-            %Q|<select id="sample-id" name="builder_tester[sample_id]">|+
-            %Q|<option value="1" selected>Tester</option>|+
-            %Q|<option value="2">Foobar</option>|+
-            %Q|</select>|
-      assert_equal out, @form.association_select(Sample)
+
+      it "should make a select field with options hash" do
+        options = {12 => "Acme Lawncare", 28 => "Foo Pest & Lawn"}
+        out = %Q|<label for="a-thing">A Thing</label>|+
+              %Q|<select id="a-thing" name="builder_tester[a_thing]">|+
+              %Q|<option value="12">Acme Lawncare</option>|+
+              %Q|<option value="28">Foo Pest & Lawn</option>|+
+              %Q|</select>|
+        assert_equal out, @form.select(:a_thing, options: options)
+      end
+
+      it "should make a select field with custom label" do
+        options = {12 => "Acme Lawncare", 28 => "Foo Pest & Lawn"}
+        out = %Q|<label for="a-thing">My Thing</label>|+
+              %Q|<select id="a-thing" name="builder_tester[a_thing]">|+
+              %Q|<option value="12">Acme Lawncare</option>|+
+              %Q|<option value="28">Foo Pest & Lawn</option>|+
+              %Q|</select>|
+        assert_equal out, @form.select(:a_thing, options: options, label: "My Thing")
+      end
+
+      it "should make an association select" do
+        Sample = Class.new do
+          def self.all
+            [OpenStruct.new(id: 1, name: "Tester"),
+             OpenStruct.new(id: 2, name: "Foobar")]
+          end
+          def self.first
+            self.new
+          end
+          def self.map &block
+            self.all.map &block
+          end
+        end
+        out = %Q|<label for="sample-id">Sample</label>|+
+              %Q|<select id="sample-id" name="builder_tester[sample_id]">|+
+              %Q|<option value="1" selected>Tester</option>|+
+              %Q|<option value="2">Foobar</option>|+
+              %Q|</select>|
+        assert_equal out, @form.association_select(Sample)
+      end
+
+      it "should make an association select with CamelCase class name" do
+        SomeThing = Class.new do
+          def self.all
+            [OpenStruct.new(id: 1, name: "Tester"),
+             OpenStruct.new(id: 2, name: "Foobar")]
+          end
+          def self.first
+            self.new
+          end
+          def self.map &block
+            self.all.map &block
+          end
+        end
+        out = %Q|<label for="some-thing-id">Some Thing</label>|+
+              %Q|<select id="some-thing-id" name="builder_tester[some_thing_id]">|+
+              %Q|<option value="1" selected>Tester</option>|+
+              %Q|<option value="2">Foobar</option>|+
+              %Q|</select>|
+        assert_equal out, @form.association_select(SomeThing)
+      end
     end
 
     describe "date inputs" do

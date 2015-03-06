@@ -144,10 +144,10 @@ module NForm
     end
 
     def association_select(association,key_method: :id, label_method: :name)
-      label = detect_object_name(association)
-      key = (label.downcase + "_id").to_sym
+      aname = detect_object_name(association)
+      key = (aname.underscore + "_id").to_sym
       options = Hash[ association.map{|i| [i.send(key_method), i.send(label_method)]}]
-      select(key,options: options, label: label)
+      select(key,options: options, label: aname.underscore.titleize)
     end
 
     def date_input(k, label: nil, start_year: nil, end_year: nil, default:{})

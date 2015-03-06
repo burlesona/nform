@@ -55,6 +55,10 @@ class BuilderTester
     1
   end
 
+  def some_thing_id
+    1
+  end
+
   def password
   end
 
