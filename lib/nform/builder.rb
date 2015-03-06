@@ -127,11 +127,13 @@ module NForm
             error_for(k)
     end
 
-    def select(k, options:, label: nil)
+    def select(k, options:, label: nil, blank: true)
+      opts = options.map{|value,text| option_for(k,value,text) }
+      opts.unshift option_for(k,nil,nil) if blank
       zjoin(
         label_for(k, text: label),
         tag(:select, id:k.to_s.dasherize, name:param(k)){
-          zjoin options.map{|value,text| option_for(k,value,text) }
+          zjoin opts
         },
         error_for(k)
       )
@@ -143,11 +145,11 @@ module NForm
       tag(:option, opts){text ? text : value}
     end
 
-    def association_select(association,key_method: :id, label_method: :name)
+    def association_select(association,key_method: :id, label_method: :name, blank: true)
       aname = detect_object_name(association)
       key = (aname.underscore + "_id").to_sym
       options = Hash[ association.map{|i| [i.send(key_method), i.send(label_method)]}]
-      select(key,options: options, label: aname.underscore.titleize)
+      select(key,options: options, label: aname.underscore.titleize, blank: blank)
     end
 
     def date_input(k, label: nil, start_year: nil, end_year: nil, default:{})

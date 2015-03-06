@@ -188,6 +188,7 @@ describe NForm::Builder do
         options = %w|one two three|
         out = %Q|<label for="a-thing">A Thing</label>|+
               %Q|<select id="a-thing" name="builder_tester[a_thing]">|+
+              %Q|<option></option>|+
               %Q|<option value="one">one</option>|+
               %Q|<option value="two">two</option>|+
               %Q|<option value="three">three</option>|+
@@ -195,10 +196,34 @@ describe NForm::Builder do
         assert_equal out, @form.select(:a_thing, options: options)
       end
 
+      it "should make a select field with options array and selected option" do
+        options = %w|foo bar foobar|
+        out = %Q|<label for="a-thing">A Thing</label>|+
+              %Q|<select id="a-thing" name="builder_tester[a_thing]">|+
+              %Q|<option></option>|+
+              %Q|<option value="foo">foo</option>|+
+              %Q|<option value="bar">bar</option>|+
+              %Q|<option value="foobar" selected>foobar</option>|+
+              %Q|</select>|
+        assert_equal out, @form.select(:a_thing, options: options)
+      end
+
+      it "should make a select field with options array and no blank" do
+        options = %w|foo bar foobar|
+        out = %Q|<label for="a-thing">A Thing</label>|+
+              %Q|<select id="a-thing" name="builder_tester[a_thing]">|+
+              %Q|<option value="foo">foo</option>|+
+              %Q|<option value="bar">bar</option>|+
+              %Q|<option value="foobar" selected>foobar</option>|+
+              %Q|</select>|
+        assert_equal out, @form.select(:a_thing, options: options, blank: false)
+      end
+
       it "should make a select field with options hash" do
         options = {12 => "Acme Lawncare", 28 => "Foo Pest & Lawn"}
         out = %Q|<label for="a-thing">A Thing</label>|+
               %Q|<select id="a-thing" name="builder_tester[a_thing]">|+
+              %Q|<option></option>|+
               %Q|<option value="12">Acme Lawncare</option>|+
               %Q|<option value="28">Foo Pest & Lawn</option>|+
               %Q|</select>|
@@ -209,6 +234,7 @@ describe NForm::Builder do
         options = {12 => "Acme Lawncare", 28 => "Foo Pest & Lawn"}
         out = %Q|<label for="a-thing">My Thing</label>|+
               %Q|<select id="a-thing" name="builder_tester[a_thing]">|+
+              %Q|<option></option>|+
               %Q|<option value="12">Acme Lawncare</option>|+
               %Q|<option value="28">Foo Pest & Lawn</option>|+
               %Q|</select>|
@@ -230,6 +256,7 @@ describe NForm::Builder do
         end
         out = %Q|<label for="sample-id">Sample</label>|+
               %Q|<select id="sample-id" name="builder_tester[sample_id]">|+
+              %Q|<option></option>|+
               %Q|<option value="1" selected>Tester</option>|+
               %Q|<option value="2">Foobar</option>|+
               %Q|</select>|
@@ -251,6 +278,7 @@ describe NForm::Builder do
         end
         out = %Q|<label for="some-thing-id">Some Thing</label>|+
               %Q|<select id="some-thing-id" name="builder_tester[some_thing_id]">|+
+              %Q|<option></option>|+
               %Q|<option value="1" selected>Tester</option>|+
               %Q|<option value="2">Foobar</option>|+
               %Q|</select>|
@@ -375,6 +403,7 @@ describe NForm::Builder do
       options = %w|one two three|
       out = %Q|<label for="a-thing">A Thing</label>|+
             %Q|<select id="a-thing" name="error_tester[a_thing]">|+
+            %Q|<option></option>|+
             %Q|<option value="one">one</option>|+
             %Q|<option value="two">two</option>|+
             %Q|<option value="three">three</option>|+
