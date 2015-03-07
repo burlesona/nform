@@ -1,4 +1,4 @@
-require 'test_helper'
+ 'test_helper'
 
 describe NForm::Builder do
   describe "new objects" do
@@ -108,10 +108,28 @@ describe NForm::Builder do
       assert_equal out, @form.text_field(:a_nil, label: "Fooness")
     end
 
+    it "should make a text_field with merged arbitrary attributes" do
+      out = %Q|<label for="a-nil">Fooness</label>| +
+            %Q|<input type="text" id="a-nil" name="builder_tester[a_nil]" xattr="fooness">|
+      assert_equal out, @form.text_field(:a_nil, label: "Fooness", xattr: "fooness")
+    end
+
     it "should make a number field" do
       out = %Q|<label for="a-thing">A Thing</label>| +
             %Q|<input type="number" id="a-thing" name="builder_tester[a_thing]" value="foobar" pattern="\\d*">|
       assert_equal out, @form.number_field(:a_thing)
+    end
+
+    it "should make a number field with a default value" do
+      out = %Q|<label for="a-nil">A Nil</label>| +
+            %Q|<input type="number" id="a-nil" name="builder_tester[a_nil]" value="a_nil" pattern="\\d*">|
+      assert_equal out, @form.number_field(:a_nil,default: 'a_nil')
+    end
+
+    it "should make a number field with merged arbitrary attributes" do
+      out = %Q|<label for="a-thing">A Thing</label>| +
+            %Q|<input type="number" id="a-thing" name="builder_tester[a_thing]" value="foobar" pattern="\\d+" min="0">|
+      assert_equal out, @form.number_field(:a_thing,default: 'default',pattern: '\d+',min: 0)
     end
 
     it "should make a password_field" do
@@ -120,9 +138,20 @@ describe NForm::Builder do
       assert_equal out, @form.password_field(:password)
     end
 
+    it "should make a password_field with merged arbitrary attributes" do
+      out = %Q|<label for="password">Password</label>| +
+            %Q|<input type="password" id="password" name="builder_tester[password]" xattr="fooness">|
+      assert_equal out, @form.password_field(:password,xattr: "fooness")
+    end
+
     it "should make a hidden_field" do
       out = %Q|<input type="hidden" id="a-thing" name="builder_tester[a_thing]" value="foobar">|
       assert_equal out, @form.hidden_field(:a_thing)
+    end
+
+    it "should make a hidden_field with merged arbitrary attributes" do
+      out = %Q|<input type="hidden" id="a-thing" name="builder_tester[a_thing]" value="foobar" xattr="fooness">|
+      assert_equal out, @form.hidden_field(:a_thing,xattr: "fooness")
     end
 
     it "should make a text_area" do
@@ -146,6 +175,14 @@ describe NForm::Builder do
             %Q|<textarea id="a-nil" name="builder_tester[a_nil]">|+
             %Q|</textarea>|
       assert_equal out, @form.text_area(:a_nil, label: "Foo")
+    end
+
+    it "should make a text_area with merged arbitrary attributes" do
+      out = %Q|<label for="a-thing">A Thing</label>|+
+            %Q|<textarea id="a-thing" name="builder_tester[a_thing]" xattr="fooness">|+
+            %Q|foobar|+
+            %Q|</textarea>|
+      assert_equal out, @form.text_area(:a_thing,xattr: "fooness")
     end
 
     it "should make a boolean checkbox" do
@@ -181,6 +218,13 @@ describe NForm::Builder do
             %Q|<input type="hidden" name="builder_tester[a_thing]" value="false">|+
             %Q|<input type="checkbox" id="a-thing" name="builder_tester[a_thing]" value="true" checked>|
       assert_equal out, @form.bool_field(:a_thing)
+    end
+
+    it "should make a boolean checkbox with merged arbitrary attributes" do
+      out = %Q|<label for="a-nil">A Nil</label>|+
+            %Q|<input type="hidden" name="builder_tester[a_nil]" value="false">|+
+            %Q|<input type="checkbox" id="a-nil" name="builder_tester[a_nil]" value="true" xattr="fooness">|
+      assert_equal out, @form.bool_field(:a_nil,xattr: "fooness")
     end
 
     describe "select fields" do
@@ -239,6 +283,17 @@ describe NForm::Builder do
               %Q|<option value="28">Foo Pest & Lawn</option>|+
               %Q|</select>|
         assert_equal out, @form.select(:a_thing, options: options, label: "My Thing")
+      end
+
+      it "should make a select field with merged arbitrary attributes" do
+        options = {12 => "Acme Lawncare", 28 => "Foo Pest & Lawn"}
+        out = %Q|<label for="a-thing">A Thing</label>|+
+              %Q|<select id="a-thing" name="builder_tester[a_thing]" xattr="fooness">|+
+              %Q|<option></option>|+
+              %Q|<option value="12">Acme Lawncare</option>|+
+              %Q|<option value="28">Foo Pest & Lawn</option>|+
+              %Q|</select>|
+        assert_equal out, @form.select(:a_thing, options: options, xattr: "fooness")
       end
 
       it "should make an association select" do
@@ -350,6 +405,10 @@ describe NForm::Builder do
 
     it "should make a submit button" do
       assert_equal "<button>Create</button>", @form.submit_button
+    end
+
+    it "should make a submit button with merged arbitrary attributes" do
+      assert_equal %Q|<button xattr="fooness">Create</button>|, @form.submit_button(xattr: "fooness")
     end
 
     it "should make a submit button that says Save for not new objects" do
