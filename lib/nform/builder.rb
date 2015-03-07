@@ -1,5 +1,4 @@
 require 'active_support/core_ext/string'
-
 module NForm
   class Builder
     include HTML
@@ -94,45 +93,46 @@ module NForm
       tag(:span, class: 'error'){ errors[k] } if errors[k]
     end
 
-    def text_field(k, label: nil, default: nil)
-      zjoin label_for(k,text:label), input_for(k,default:default), error_for(k)
+    def text_field(k, label: nil, default: nil, **args)
+      zjoin label_for(k,text:label), input_for(k,default:default,**args), error_for(k)
     end
 
-    def number_field(k, label: nil, default: nil)
-      zjoin label_for(k,text:label), input_for(k,type:'number',default:default,pattern:'\d*'), error_for(k)
+    def number_field(k, label: nil, default: nil, **args)
+      opts = {type:'number', pattern: '\d*'}.merge(args)
+      zjoin label_for(k,text:label), input_for(k,type:'number',default:default,**opts), error_for(k)
     end
 
-    def password_field(k, label: nil)
-      zjoin label_for(k,text:label), input_for(k,type:"password"), error_for(k)
+    def password_field(k, label: nil, **args)
+      zjoin label_for(k,text:label), input_for(k,type:"password",**args), error_for(k)
     end
 
-    def hidden_field(k)
-      input_for(k, type: "hidden")
+    def hidden_field(k,**args)
+      input_for(k, type: "hidden",**args)
     end
 
-    def text_area(k, label: nil, default: nil)
+    def text_area(k, label: nil, default: nil,**args)
       val = object.send(k) || default
       zjoin(
         label_for(k, text:label),
-        tag(:textarea, id:k.to_s.dasherize, name:param(k)){ "#{val}" if val },
+        tag(:textarea, id:k.to_s.dasherize, name:param(k),**args){ "#{val}" if val },
         error_for(k)
       )
     end
 
-    def bool_field(k, label: nil)
+    def bool_field(k, label: nil,**args)
       checked = ( !object.send(k) || object.send(k) == "false" ) ? false : true
       zjoin label_for(k,text: label),
             tag(:input, type:'hidden',name:param(k), value:"false"),
-            tag(:input, type:'checkbox', id: k.to_s.dasherize, name:param(k), value:"true", checked:checked),
+            tag(:input, type:'checkbox', id: k.to_s.dasherize, name:param(k), value:"true", checked:checked,**args),
             error_for(k)
     end
 
-    def select(k, options:, label: nil, blank: true)
+    def select(k, options:, label: nil, blank: true,**args)
       opts = options.map{|value,text| option_for(k,value,text) }
       opts.unshift option_for(k,nil,nil) if blank
       zjoin(
         label_for(k, text: label),
-        tag(:select, id:k.to_s.dasherize, name:param(k)){
+        tag(:select, id:k.to_s.dasherize, name:param(k), **args){
           zjoin opts
         },
         error_for(k)
@@ -170,8 +170,8 @@ module NForm
         placeholder: ph, min: min, max: max, step: 1, value: val }
     end
 
-    def submit_button
-      tag(:button){ new_object? ? "Create" : "Save" }
+    def submit_button(**args)
+      tag(:button,**args){ new_object? ? "Create" : "Save" }
     end
 
     private
@@ -204,6 +204,5 @@ module NForm
     end
   end
 
-  class BuilderError < Error
-  end
+  BuilderError = Class.new(Error)
 end
