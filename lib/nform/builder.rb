@@ -79,8 +79,10 @@ module NForm
       object_name + args.map{|a|"[#{a}]"}.join
     end
 
-    def label_for(k, text: nil)
-      tag(:label, for: k.to_s.dasherize){ text || k.to_s.titleize }
+    # allow "label: false" to prevent label being generated so that function that call label_for
+    # can all consistently omit the label when label value is given as false
+    def label_for(k, label: nil)
+      tag(:label, for: k.to_s.dasherize){ label || k.to_s.titleize } unless label == false
     end
 
     def input_for(k, type: "text", default: nil, **args)
@@ -94,16 +96,16 @@ module NForm
     end
 
     def text_field(k, label: nil, default: nil, **args)
-      zjoin label_for(k,text:label), input_for(k,default:default,**args), error_for(k)
+      zjoin label_for(k, label:label), input_for(k,default:default,**args), error_for(k)
     end
 
     def number_field(k, label: nil, default: nil, **args)
       opts = {type:'number', pattern: '\d*'}.merge(args)
-      zjoin label_for(k,text:label), input_for(k,type:'number',default:default,**opts), error_for(k)
+      zjoin label_for(k, label:label), input_for(k,type:'number',default:default,**opts), error_for(k)
     end
 
     def password_field(k, label: nil, **args)
-      zjoin label_for(k,text:label), input_for(k,type:"password",**args), error_for(k)
+      zjoin label_for(k, label:label), input_for(k,type:"password",**args), error_for(k)
     end
 
     def hidden_field(k,**args)
@@ -113,7 +115,7 @@ module NForm
     def text_area(k, label: nil, default: nil,**args)
       val = object.send(k) || default
       zjoin(
-        label_for(k, text:label),
+        label_for(k, label:label),
         tag(:textarea, id:k.to_s.dasherize, name:param(k),**args){ "#{val}" if val },
         error_for(k)
       )
@@ -121,7 +123,7 @@ module NForm
 
     def bool_field(k, label: nil,**args)
       checked = ( !object.send(k) || object.send(k) == "false" ) ? false : true
-      zjoin label_for(k,text: label),
+      zjoin label_for(k, label: label),
             tag(:input, type:'hidden',name:param(k), value:"false"),
             tag(:input, type:'checkbox', id: k.to_s.dasherize, name:param(k), value:"true", checked:checked,**args),
             error_for(k)
@@ -131,7 +133,7 @@ module NForm
       opts = options.map{|value,text| option_for(k,value,text) }
       opts.unshift option_for(k,nil,nil) if blank
       zjoin(
-        label_for(k, text: label),
+        label_for(k, label: label),
         tag(:select, id:k.to_s.dasherize, name:param(k), **args){
           zjoin opts
         },
@@ -145,11 +147,16 @@ module NForm
       tag(:option, opts){text ? text : value}
     end
 
-    def association_select(association,key_method: :id, label_method: :name, blank: true)
+    def association_select(association,key_method: :id, label_method: :name, **args)
       aname = detect_object_name(association)
       key = (aname.underscore + "_id").to_sym
       options = Hash[ association.map{|i| [i.send(key_method), i.send(label_method)]}]
-      select(key,options: options, label: aname.underscore.titleize, blank: blank)
+
+      unless defined?(label) && label == false
+        label ||= aname.underscore.titleize
+      end
+
+      select(key,options: options, label: label, **args)
     end
 
     def date_input(k, label: nil, start_year: nil, end_year: nil, default:{})
@@ -157,7 +164,7 @@ module NForm
       end_year ||= start_year+20
       val = get_value(object,k)
       tag :div, class: "date-input" do
-        zjoin label_for(nil,text:(label||k.to_s.titleize)),
+        zjoin label_for(nil,label:(label||k.to_s.titleize)),
               tag(:input, date_attrs(k,:month,"MM",01,12,get_value(val,:month, default[:month]))),
               tag(:input, date_attrs(k,:day,"DD",01,31,get_value(val,:day, default[:day]))),
               tag(:input, date_attrs(k,:year,"YYYY",start_year,end_year,get_value(val,:year, default[:year]))),

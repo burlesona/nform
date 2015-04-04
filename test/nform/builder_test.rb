@@ -1,4 +1,4 @@
- 'test_helper'
+require 'test_helper'
 
 describe NForm::Builder do
   describe "new objects" do
@@ -106,6 +106,11 @@ describe NForm::Builder do
       out = %Q|<label for="a-nil">Fooness</label>| +
             %Q|<input type="text" id="a-nil" name="builder_tester[a_nil]">|
       assert_equal out, @form.text_field(:a_nil, label: "Fooness")
+    end
+
+    it "should make a text_field with no label" do
+      out = %Q|<input type="text" id="a-nil" name="builder_tester[a_nil]">|
+      assert_equal out, @form.text_field(:a_nil, label: false)
     end
 
     it "should make a text_field with merged arbitrary attributes" do
@@ -296,7 +301,8 @@ describe NForm::Builder do
         assert_equal out, @form.select(:a_thing, options: options, xattr: "fooness")
       end
 
-      it "should make an association select" do
+      # Consolidated test runs so setup can be shared
+      it "should make an association select with various options" do
         Sample = Class.new do
           def self.all
             [OpenStruct.new(id: 1, name: "Tester"),
@@ -315,7 +321,23 @@ describe NForm::Builder do
               %Q|<option value="1" selected>Tester</option>|+
               %Q|<option value="2">Foobar</option>|+
               %Q|</select>|
-        assert_equal out, @form.association_select(Sample)
+        assert_equal out, @form.association_select(Sample), "default output is wrong"
+
+        out2 = %Q|<label for="sample-id">Custom Label</label>|+
+               %Q|<select id="sample-id" name="builder_tester[sample_id]">|+
+               %Q|<option></option>|+
+               %Q|<option value="1" selected>Tester</option>|+
+               %Q|<option value="2">Foobar</option>|+
+               %Q|</select>|
+        assert_equal out2, @form.association_select(Sample, label: "Custom Label"), "custom label output is wrong"
+
+        out3 = %Q|<select id="sample-id" name="builder_tester[sample_id]">|+
+               %Q|<option></option>|+
+               %Q|<option value="1" selected>Tester</option>|+
+               %Q|<option value="2">Foobar</option>|+
+               %Q|</select>|
+        assert_equal out3, @form.association_select(Sample, label: false), "no label output is wrong"
+
       end
 
       it "should make an association select with CamelCase class name" do
