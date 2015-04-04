@@ -3,10 +3,11 @@ module NForm
   class Builder
     include HTML
 
-    attr_reader :object
-    def initialize(object,id: nil, action: nil, method: nil)
+    attr_reader :object, :form_class
+    def initialize(object, id: nil, form_class: nil, action: nil, method: nil)
       @object = object
       @form_id = id
+      @form_class = form_class
       @action = action
       @http_method = method
     end
@@ -65,7 +66,7 @@ module NForm
     end
 
     def render
-      tag(:form, id: form_id, action:action, method:"POST") do
+      tag(:form, id: form_id, class: form_class, action:action, method:"POST") do
         body = yield(self) if block_given?
         zjoin(method_tag,base_errors,body)
       end

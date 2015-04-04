@@ -37,6 +37,11 @@ describe NForm::Builder do
       assert_equal out, form_view(BuilderTester.new, id: "test")
     end
 
+    it "should override class" do
+      out = %Q|<form id="test" class="foo" action="/builder-testers" method="POST"></form>|
+      assert_equal out, form_view(BuilderTester.new, id: "test", form_class: "foo")
+    end
+
     it "should override action" do
       out = %Q|<form id="builder-tester" action="/tests" method="POST"></form>|
       assert_equal out, form_view(BuilderTester.new, action: "/tests")
