@@ -147,12 +147,12 @@ module NForm
       tag(:option, opts){text ? text : value}
     end
 
-    def association_select(association,key_method: :id, label_method: :name, **args)
+    def association_select(association,key_method: :id, label_method: :name, label: nil, **args)
       aname = detect_object_name(association)
       key = (aname.underscore + "_id").to_sym
       options = Hash[ association.map{|i| [i.send(key_method), i.send(label_method)]}]
 
-      unless defined?(label) && label == false
+      unless label == false
         label ||= aname.underscore.titleize
       end
 
