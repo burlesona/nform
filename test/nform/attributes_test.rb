@@ -81,6 +81,7 @@ describe NForm::Attributes do
       extend NForm::Attributes
       attribute :a_normal
       attribute :a_default, default: "foo"
+      attribute :a_coerce, default: false, coerce: proc{|n| !(n.nil? || n == false || n == 'false')}
     end
 
     it "should have a default value" do
@@ -91,6 +92,17 @@ describe NForm::Attributes do
     it "should not have default unless set" do
       example = Example3.new
       assert_equal nil, example.a_normal
+    end
+
+    it "should initialize with defaults set in hash representation" do
+      hash = Example3.new.to_hash
+      assert_equal nil, hash[:a_normal]
+      assert_equal "foo", hash[:a_default]
+    end
+
+    it "should use coercion with defaults" do
+      example = Example3.new
+      assert_equal false, example.a_coerce
     end
   end
 

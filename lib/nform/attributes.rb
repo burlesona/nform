@@ -5,7 +5,7 @@ module NForm
     def attribute(name,coerce:nil,required:false,default:nil)
       attribute_set[name] = define_coercion(coerce)
       required_attributes << name if required
-      default_attributes[name] = default if default
+      default_attributes[name] = default unless default.nil?
     end
 
     def attribute_set
@@ -89,8 +89,8 @@ module NForm
 
       def set_missing_defaults
         self.class.attribute_set.keys.each do |a|
-          if send(a).nil? && d = self.class.default_attributes[a]
-            send "#{a}=", d
+          if send(a).nil? && self.class.default_attributes.has_key?(a)
+            send "#{a}=", self.class.default_attributes[a]
           end
         end
       end
