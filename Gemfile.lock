@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    nform (0.1.0)
+    nform (0.2.0)
       activesupport (>= 4.0.0)
 
 GEM

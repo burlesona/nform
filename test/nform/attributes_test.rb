@@ -2,22 +2,20 @@ require 'test_helper'
 
 describe NForm::Attributes do
   describe "basic cases" do
+    NForm::Coercions[:input_to_date] = proc do |input|
+      if input.nil?
+        nil
+      elsif input.is_a?(Date)
+        input
+      elsif input.is_a?(Hash)
+        Date.new(input[:year],input[:month],input[:day])
+      end
+    end
     class Example
       extend NForm::Attributes
       attribute :sample
       attribute :a_date, coerce: :input_to_date
       attribute :a_string, coerce: proc{|s| s.upcase }
-
-      private
-      def input_to_date(input)
-        if input.nil?
-          nil
-        elsif input.is_a?(Date)
-          input
-        elsif input.is_a?(Hash)
-          Date.new(input[:year],input[:month],input[:day])
-        end
-      end
     end
     it "should work with nil input" do
       a = Example.new
@@ -106,6 +104,37 @@ describe NForm::Attributes do
     end
   end
 
+  describe "coercion chaining" do
+    NForm::Coercions[:strip] = proc{|s| s.strip }
+    class ExampleChain
+      extend NForm::Attributes
+      attribute :chain_to_nil, coerce: [:to_string,:strip,:to_presence]
+      attribute :chain_to_string, coerce: [:to_string,:strip]
+    end
+
+    it "should chain coercions" do
+      example = ExampleChain.new
+      example.chain_to_nil = " tester foo   "
+      assert_equal "tester foo", example.chain_to_nil
+    end
+
+    it "should return nil for no value" do
+      example = ExampleChain.new(chain_to_nil: nil)
+      assert_equal nil, example.chain_to_nil
+    end
+
+    it "should return empty string for chain to string" do
+      example = ExampleChain.new(chain_to_string: nil)
+      assert_equal "", example.chain_to_string
+    end
+
+    # There are potential runtime errors here if a method like "strip" above
+    # requires input of a particular type. This can be avoided by checking in
+    # the coercion, but in that case it probably makes more sense to have a
+    # larger variety of single coercions that define a whole process, rather than chaining.
+
+  end
+
   describe "undefined attributes" do
     class DefOnly
       extend NForm::Attributes
@@ -137,6 +166,5 @@ describe NForm::Attributes do
         ex.foo
       end
     end
-
   end
 end

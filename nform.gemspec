@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'nform'
-  s.version     = '0.1.0'
+  s.version     = '0.2.0'
   s.date        = '2015-01-10'
   s.summary     = 'A form library'
   s.description = 'A nifty form builder and such.'

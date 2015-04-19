@@ -1,23 +1,28 @@
 require 'active_support/core_ext/hash'
+require 'nform/coercions'
+
+# Step 1 Refactoring
+# Simplify attribute set to be a hash of options rather than different sets of options
+# COMPLETE
+
+# Step 2 Refactoring
+# Use new Coercions rather than reading methods from the including object
+# COMPLETE
+
+# Step 3 Refactoring
+# Allow coercions to be passed as an array that will be called in a chain
+# eg. `coerce: [:string,:trim,:presence] etc.
+# Have to come up with a desired behavior for if the chain fails...
+
 
 module NForm
   module Attributes
     def attribute(name,coerce:nil,required:false,default:nil)
-      attribute_set[name] = define_coercion(coerce)
-      required_attributes << name if required
-      default_attributes[name] = default unless default.nil?
+      attribute_set[name.to_sym] = {coerce: coerce, required: required, default: default}
     end
 
     def attribute_set
       @attribute_set ||= {}
-    end
-
-    def required_attributes
-      @required_attributes ||= []
-    end
-
-    def default_attributes
-      @default_attributes ||= {}
     end
 
     def undefined_attributes(option)
@@ -32,22 +37,34 @@ module NForm
     end
 
     def define_attributes
-      attribute_set.each do |a,c|
-        define_method(a) do
-          instance_variable_get("@#{a}")
+      attribute_set.each do |name,options|
+        define_method(name) do
+          instance_variable_get("@#{name}")
         end
-        define_method("#{a}=") do |i|
-          instance_variable_set("@#{a}",c.call(i,self))
+
+        # TODO: must use coercion set
+        c = get_coercion(options[:coerce])
+        define_method("#{name}=") do |input|
+          instance_variable_set("@#{name}", c.call(input))
         end
       end
     end
 
-    def define_coercion(defn)
+    def get_coercion(coerce_option)
       case
-      when defn.nil? then proc{|val,scope| val }
-      when defn.is_a?(Symbol) then proc{|val,scope| scope.method(defn).call(val)}
-      when defn.respond_to?(:call) then defn
-      else raise "Invalid Coercion method given"
+      when coerce_option.nil?
+        proc{|n| n }
+      when coerce_option.is_a?(Symbol)
+        NForm::Coercions.fetch(coerce_option)
+      when coerce_option.respond_to?(:call)
+        coerce_option
+      when coerce_option.is_a?(Enumerable)
+        chain = coerce_option.map{|o| get_coercion(o) }
+        proc do |input|
+          chain.reduce(input){|i,c| c.call(i) }
+        end
+      else
+        raise Error, "Invalid coerce option given"
       end
     end
 
@@ -71,26 +88,28 @@ module NForm
       end
 
       private
-      def require_attributes!(attrs)
-        missing = (self.class.required_attributes - attrs.keys)
+      def require_attributes!(input_hash)
+        required = self.class.attribute_set.map{|name,options| name if options[:required]}.compact
+        missing  = (required - input_hash.keys)
         if missing.any?
           raise ArgumentError, "Missing required attributes: #{missing.inspect}"
         end
       end
 
-      def set_attributes!(hash)
-        hash.each do |k,v|
+      def set_attributes!(input_hash)
+        input_hash.each do |k,v|
           if self.class.__undef_attr == :raise
             raise ArgumentError, "Undefined attribute: #{k}" unless respond_to?("#{k}=")
           end
-          send "#{k}=",v if respond_to?("#{k}=")
+          send "#{k}=", v if respond_to?("#{k}=")
         end
       end
 
       def set_missing_defaults
-        self.class.attribute_set.keys.each do |a|
-          if send(a).nil? && self.class.default_attributes.has_key?(a)
-            send "#{a}=", self.class.default_attributes[a]
+        self.class.attribute_set.each do |name, options|
+          default = options[:default]
+          unless default.nil?
+            send("#{name}=",default) if send(name).nil?
           end
         end
       end
