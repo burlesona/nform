@@ -167,4 +167,61 @@ describe NForm::Attributes do
       end
     end
   end
+
+  describe "method attributes" do
+    class MethodAttribute
+
+      extend NForm::Attributes
+      chainy = proc{|input,scope| scope.send(:my_chain,input) }
+      attribute :testpub, coerce: proc{|input,scope| scope.send(:my_public,input) }
+      attribute :testpri, coerce: proc{|input,scope| scope.send(:my_private,input) }
+      attribute :testchain, coerce: [:to_float, chainy]
+
+      def test_true; true; end
+      def test_false; false; end
+
+      def my_public(input)
+        if test_true
+          input.to_s + "!"
+        else
+          nil
+        end
+      end
+
+      private
+      def my_private(input)
+        if test_false
+          nil
+        else
+          input.to_s + "?"
+        end
+      end
+
+      def my_chain(input)
+        input.to_s + "%"
+      end
+    end
+
+    it "should allow wrapping a public instance method in a proc" do
+      m = MethodAttribute.new
+      m.testpub = 1
+      assert_equal "1!", m.testpub
+      m2 = MethodAttribute.new(testpub: 1)
+      assert_equal "1!", m2.testpub
+    end
+
+    it "should allow wrapping a private instance method in a proc" do
+      m = MethodAttribute.new
+      m.testpri = 1
+      assert_equal "1?", m.testpri
+      m2 = MethodAttribute.new(testpri: 1)
+      assert_equal "1?", m2.testpri
+    end
+
+    it "should allow including a wrapped method in a chain" do
+      m = MethodAttribute.new
+      m.testchain = "2"
+      assert_equal "2.0%", m.testchain
+    end
+  end
 end

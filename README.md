@@ -86,6 +86,28 @@ model.maybe_empty_string #=> ""
 model.not_empty_string #=> nil
 ```
 
+*New in 0.3.x:*
+
+Sometimes it's helpful to be able to define a coercion in an instance method, perhaps if the object
+has state that affects what values can be set. For this reason an optional second parameter is passed into each
+coercion proc with a reference to the instance. You can therefore define a proc coercion that calls a method like this:
+
+```
+class MyObject
+  extend NForm::Attributes
+  attribute :something, coerce: proc{|input,instance| instance.send(:set_something,input) }
+
+  private
+  def set_something(input)
+    if @something_locked
+      raise "This attribute is currently locked and cannot be set"
+    else
+      input
+    end
+  end
+end
+```
+
 TODO: Expand docs
 
 ### NForm::Validations
