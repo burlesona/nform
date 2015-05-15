@@ -1,20 +1,6 @@
 require 'active_support/core_ext/hash'
 require 'nform/coercions'
 
-# Step 1 Refactoring
-# Simplify attribute set to be a hash of options rather than different sets of options
-# COMPLETE
-
-# Step 2 Refactoring
-# Use new Coercions rather than reading methods from the including object
-# COMPLETE
-
-# Step 3 Refactoring
-# Allow coercions to be passed as an array that will be called in a chain
-# eg. `coerce: [:string,:trim,:presence] etc.
-# Have to come up with a desired behavior for if the chain fails...
-
-
 module NForm
   module Attributes
     def attribute(name,coerce:nil,required:false,default:nil)
@@ -45,7 +31,7 @@ module NForm
         # TODO: must use coercion set
         c = get_coercion(options[:coerce])
         define_method("#{name}=") do |input|
-          instance_variable_set("@#{name}", c.call(input))
+          instance_variable_set("@#{name}", c.call(input,self))
         end
       end
     end
@@ -60,8 +46,8 @@ module NForm
         coerce_option
       when coerce_option.is_a?(Enumerable)
         chain = coerce_option.map{|o| get_coercion(o) }
-        proc do |input|
-          chain.reduce(input){|i,c| c.call(i) }
+        proc do |input,scope|
+          chain.reduce(input){|i,c| c.call(i,scope) }
         end
       else
         raise Error, "Invalid coerce option given"
