@@ -434,6 +434,10 @@ describe NForm::Builder do
       assert_equal "<button>Create</button>", @form.submit_button
     end
 
+    it "should make a submit button with custom text" do
+      assert_equal "<button>HELLO</button>", @form.submit_button(text: "HELLO")
+    end
+
     it "should make a submit button with merged arbitrary attributes" do
       assert_equal %Q|<button xattr="fooness">Create</button>|, @form.submit_button(xattr: "fooness")
     end

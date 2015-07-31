@@ -179,7 +179,8 @@ module NForm
     end
 
     def submit_button(**args)
-      tag(:button,**args){ new_object? ? "Create" : "Save" }
+      text = args.delete(:text)
+      tag(:button,**args){ text || (new_object? ? "Create" : "Save") }
     end
 
     private

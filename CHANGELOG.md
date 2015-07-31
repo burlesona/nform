@@ -1,5 +1,8 @@
 # NForm Changelog
 
+## 0.3.1
+- Add `text` option to submit buttons.
+
 ## 0.3.0
 - Add scope argument to coercion procs to provide a way to get to instance methods in attribute setters
 
