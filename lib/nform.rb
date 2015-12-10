@@ -1,5 +1,3 @@
-require 'active_support'
-
 module NForm
   # A base error class for any NForm exceptions to extend
   Error = Class.new(StandardError)
@@ -18,3 +16,5 @@ require 'nform/builder'
 require 'nform/attributes'
 require 'nform/validations'
 require 'nform/coercions'
+require 'nform/form'
+require 'nform/service'
