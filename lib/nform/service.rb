@@ -25,12 +25,6 @@ module NForm
       @@form_class = klass || const_get(:Form)
     end
 
-    def self.form_object &block
-      form = Class.new(Form)
-      form.class_eval &block
-      const_set :Form, form
-    end
-
     private
     def get_form(input)
       input.is_a?(@@form_class) ? input : @@form_class.new(input)
