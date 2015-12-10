@@ -1,4 +1,6 @@
+require 'nform/core_ext'
 require 'active_support/core_ext/string'
+
 module NForm
   class Builder
     include HTML
