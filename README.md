@@ -1,6 +1,7 @@
 # NForm
 [![Build Status](https://travis-ci.org/burlesona/nform.svg?branch=master)](https://travis-ci.org/burlesona/nform)
 [![Code Climate](https://codeclimate.com/github/burlesona/nform/badges/gpa.svg)](https://codeclimate.com/github/burlesona/nform)
+[![Gem Version](https://badge.fury.io/rb/nform.svg)](https://badge.fury.io/rb/nform)
 
 NForm is a utility library to help you build form objects, services, and views. It is composed of
 several classes that are quite useful independently, and when combined create a complete solution
