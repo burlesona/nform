@@ -1,8 +1,8 @@
 PATH
   remote: .
   specs:
-    nform (0.3.0)
-      activesupport (>= 4.0.0)
+    nform (1.0.1)
+      activesupport (~> 4.0)
 
 GEM
   remote: https://rubygems.org/
