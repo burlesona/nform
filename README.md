@@ -2,13 +2,17 @@
 [![Build Status](https://travis-ci.org/burlesona/nform.svg?branch=master)](https://travis-ci.org/burlesona/nform)
 [![Code Climate](https://codeclimate.com/github/burlesona/nform/badges/gpa.svg)](https://codeclimate.com/github/burlesona/nform)
 
-NForm is a utility library for form objects and views. It is composed of several classes that are quite useful
-independently, and when combined create a complete solution for handling user input in web applications.
+NForm is a utility library to help you build form objects, services, and views. It is composed of
+several classes that are quite useful independently, and when combined create a complete solution
+for handling user input and interaction in ruby applications.
 
 NForm aims to be light, simple, and direct. There's not much magic in the codebase, making it
 easier for users of the library to modify, extend, and adapt it as needed.
 
 Requires Ruby >= 2.1.x.
+
+The docs are still somewhat a work in progress, but the code is easy to read, and the tests cover
+all the behavior and illustrate how everything works.
 
 ## Installation
 
@@ -123,6 +127,45 @@ When called, the methods will return true/false indicating whether the validatio
 and the errors hash will be populated with method name and error messages as keys and values.
 
 TODO: Expand docs
+
+### NForm::Form
+
+Using attributes, coercions, and validations, we now have everything we need for sweet Form Objects,
+which work like so:
+
+```ruby
+class MyForm < NForm::Form
+  attribute :tester, required: true
+  attribute :stringy, coerce: :to_string
+  attribute :number, coerce: :to_integer, default: 0
+
+  def validate!
+    errors[:number] = "Must not be negative" if number < 0
+    super
+  end
+end
+
+f = MyForm.new #=> Argument Error: Missing `tester`
+f = MyForm.new tester: 'foo', stringy: 'abc', number: -100
+f.valid? #=> false
+f.errors #=> {number: "Must not be negative"}
+f.number = 10
+f.valid? #=> true
+f.to_hash #=> {tester: 'foo', stringy: 'abc', number: 10}
+
+```
+TODO: Expand Docs
+
+### NForm::Service
+
+NForm Service is more convention than code. It defines a handy syntactic sugar whereby
+you can instantiate a callable and call it in one step. It also expects you to use a form
+object for input and makes that very easy for you to do.
+
+See the tests for more examples.
+
+TODO: Expand Docs and add rationale
+
 
 ### NForm::HTML
 

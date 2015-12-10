@@ -1,5 +1,11 @@
 # NForm Changelog
 
+## 1.0.0
+- Add Service and Form, together these complete the backend portion of
+  NForm, packaging up all the code we use to build apps around composable,
+  callable services.
+- Publish to RubyGems `gem install nform`
+
 ## 0.3.1
 - Add `text` option to submit buttons.
 

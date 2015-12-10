@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'nform'
-  s.version     = '0.3.0'
+  s.version     = '1.0.0'
   s.date        = '2015-01-10'
   s.summary     = 'A form library'
   s.description = 'A nifty form builder and such.'
@@ -9,5 +9,5 @@ Gem::Specification.new do |s|
   s.files       = Dir["{lib}/**/*.rb"]
   s.homepage    = 'http://github.com/burlesona/nform'
   s.license     = 'MIT'
-  s.add_runtime_dependency 'activesupport', '>= 4.0.0'
+  s.add_runtime_dependency 'activesupport', '~>4.0'
 end
