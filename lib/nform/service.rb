@@ -1,4 +1,5 @@
 require 'nform/core_ext'
+require 'nform/form'
 
 module NForm
   # Services expect valid input
@@ -21,13 +22,20 @@ module NForm
       new(*args).call
     end
 
+    # Setter Macro
     def self.form_class(klass=nil)
-      @@form_class = klass || const_get(:Form)
+      @@form_class ||= begin
+        klass || const_get(:Form)
+      end
     end
 
     private
     def get_form(input)
-      input.is_a?(@@form_class) ? input : @@form_class.new(input)
+      input.is_a?(form_class) ? input : form_class.new(input)
+    end
+
+    def form_class
+      self.class.form_class
     end
 
     def error!(message)
