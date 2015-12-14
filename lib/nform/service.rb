@@ -24,7 +24,7 @@ module NForm
 
     # Setter Macro
     def self.form_class(klass=nil)
-      @@form_class ||= begin
+      @form_class ||= begin
         klass || const_get(:Form)
       end
     end

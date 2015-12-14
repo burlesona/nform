@@ -29,12 +29,24 @@ class EmbeddedFormTest < NForm::Service
 
   def call
     validate!
+    form.a + form.b
   end
 
   private
   def validate!
     form.validate!
     super
+  end
+end
+
+class ComposableFormTest < NForm::Service
+  class Form < NForm::Form
+    attribute :num, coerce: :to_integer
+  end
+
+  def call
+    other = EmbeddedFormTest.call(a:1,b:1)
+    form.num + other
   end
 end
 
@@ -85,5 +97,12 @@ describe "using embedded form" do
     assert_raises(ArgumentError) do
       EmbeddedFormTest.call()
     end
+  end
+end
+
+describe "composition" do
+  it "should be possible to compose services and forms" do
+    res = ComposableFormTest.call(num: 2)
+    assert_equal 4, res
   end
 end

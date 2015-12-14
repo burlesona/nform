@@ -1,5 +1,11 @@
 # NForm Changelog
 
+## 1.0.2
+- Bugfix: In NForm::Service, form_class should be a class instance variable not a class variable.
+
+## 1.0.1
+- Update gemspec, requires version bump :(
+
 ## 1.0.0
 - Add Service and Form, together these complete the backend portion of
   NForm, packaging up all the code we use to build apps around composable,
