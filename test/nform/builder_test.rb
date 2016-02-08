@@ -369,12 +369,15 @@ describe NForm::Builder do
     end
 
     describe "date inputs" do
+      start_year ||= Date.today.year
+      end_year ||= start_year+20
+
       it "should make a date input group" do
         out = %Q|<div class="date-input">|+
               %Q|<label>A Date</label>|+
               %Q|<input class="date-month" type="number" name="builder_tester[a_date][month]" placeholder="MM" min="1" max="12" step="1" value="12">|+
               %Q|<input class="date-day" type="number" name="builder_tester[a_date][day]" placeholder="DD" min="1" max="31" step="1" value="25">|+
-              %Q|<input class="date-year" type="number" name="builder_tester[a_date][year]" placeholder="YYYY" min="2015" max="2035" step="1" value="2014">|+
+              %Q|<input class="date-year" type="number" name="builder_tester[a_date][year]" placeholder="YYYY" min="#{start_year}" max="#{end_year}" step="1" value="2014">|+
               %Q|</div>|
         assert_equal out, @form.date_input(:a_date)
       end
@@ -394,7 +397,7 @@ describe NForm::Builder do
               %Q|<label>A Nil</label>|+
               %Q|<input class="date-month" type="number" name="builder_tester[a_nil][month]" placeholder="MM" min="1" max="12" step="1">|+
               %Q|<input class="date-day" type="number" name="builder_tester[a_nil][day]" placeholder="DD" min="1" max="31" step="1">|+
-              %Q|<input class="date-year" type="number" name="builder_tester[a_nil][year]" placeholder="YYYY" min="2015" max="2035" step="1">|+
+              %Q|<input class="date-year" type="number" name="builder_tester[a_nil][year]" placeholder="YYYY" min="#{start_year}" max="#{end_year}" step="1">|+
               %Q|</div>|
         assert_equal out, @form.date_input(:a_nil)
       end
@@ -404,7 +407,7 @@ describe NForm::Builder do
               %Q|<label>A Date Hash</label>|+
               %Q|<input class="date-month" type="number" name="builder_tester[a_date_hash][month]" placeholder="MM" min="1" max="12" step="1" value="12">|+
               %Q|<input class="date-day" type="number" name="builder_tester[a_date_hash][day]" placeholder="DD" min="1" max="31" step="1" value="25">|+
-              %Q|<input class="date-year" type="number" name="builder_tester[a_date_hash][year]" placeholder="YYYY" min="2015" max="2035" step="1" value="2014">|+
+              %Q|<input class="date-year" type="number" name="builder_tester[a_date_hash][year]" placeholder="YYYY" min="#{start_year}" max="#{end_year}" step="1" value="2014">|+
               %Q|</div>|
         assert_equal out, @form.date_input(:a_date_hash)
       end
@@ -414,7 +417,7 @@ describe NForm::Builder do
               %Q|<label>A Hash</label>|+
               %Q|<input class="date-month" type="number" name="builder_tester[a_hash][month]" placeholder="MM" min="1" max="12" step="1">|+
               %Q|<input class="date-day" type="number" name="builder_tester[a_hash][day]" placeholder="DD" min="1" max="31" step="1">|+
-              %Q|<input class="date-year" type="number" name="builder_tester[a_hash][year]" placeholder="YYYY" min="2015" max="2035" step="1">|+
+              %Q|<input class="date-year" type="number" name="builder_tester[a_hash][year]" placeholder="YYYY" min="#{start_year}" max="#{end_year}" step="1">|+
               %Q|</div>|
         assert_equal out, @form.date_input(:a_hash)
       end
@@ -424,7 +427,7 @@ describe NForm::Builder do
               %Q|<label>A Hash</label>|+
               %Q|<input class="date-month" type="number" name="builder_tester[a_hash][month]" placeholder="MM" min="1" max="12" step="1" value="1">|+
               %Q|<input class="date-day" type="number" name="builder_tester[a_hash][day]" placeholder="DD" min="1" max="31" step="1" value="1">|+
-              %Q|<input class="date-year" type="number" name="builder_tester[a_hash][year]" placeholder="YYYY" min="2015" max="2035" step="1" value="2015">|+
+              %Q|<input class="date-year" type="number" name="builder_tester[a_hash][year]" placeholder="YYYY" min="#{start_year}" max="#{end_year}" step="1" value="2015">|+
               %Q|</div>|
         assert_equal out, @form.date_input(:a_hash, default:{day:1,month:1,year:2015})
       end
@@ -503,11 +506,13 @@ describe NForm::Builder do
     end
 
     it "should show errors on a date input group" do
+      start_year ||= Date.today.year
+      end_year ||= start_year+20
       out = %Q|<div class="date-input">|+
             %Q|<label>A Date</label>|+
             %Q|<input class="date-month" type="number" name="error_tester[a_date][month]" placeholder="MM" min="1" max="12" step="1" value="12">|+
             %Q|<input class="date-day" type="number" name="error_tester[a_date][day]" placeholder="DD" min="1" max="31" step="1" value="25">|+
-            %Q|<input class="date-year" type="number" name="error_tester[a_date][year]" placeholder="YYYY" min="2015" max="2035" step="1" value="2014">|+
+            %Q|<input class="date-year" type="number" name="error_tester[a_date][year]" placeholder="YYYY" min="#{start_year}" max="#{end_year}" step="1" value="2014">|+
             %Q|<span class="error">Wrong date.</span>|+
             %Q|</div>|
       assert_equal out, @form.date_input(:a_date)
