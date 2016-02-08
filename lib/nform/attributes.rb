@@ -1,5 +1,6 @@
 require 'active_support/core_ext/hash'
 require 'nform/coercions'
+require 'set'
 
 module NForm
   module Attributes
@@ -18,8 +19,19 @@ module NForm
       @undef_attr = option
     end
 
+    def hash_representation(option)
+      unless %i|partial complete|.include?(option)
+        raise ArgumentError, "Unknown option `#{option}` for hash representation. Options are :partial or :complete"
+      end
+      @hash_rep = option
+    end
+
     def __undef_attr
       @undef_attr ||= :raise
+    end
+
+    def __hash_rep
+      @hash_rep ||= :complete
     end
 
     def define_attributes
@@ -31,6 +43,7 @@ module NForm
         # TODO: must use coercion set
         c = get_coercion(options[:coerce])
         define_method("#{name}=") do |input|
+          @__touched_keys << name
           instance_variable_set("@#{name}", c.call(input,self))
         end
       end
@@ -60,43 +73,43 @@ module NForm
 
     module InstanceMethods
       def initialize(input={})
+        @__touched_keys = Set.new
         i = input.symbolize_keys
         require_attributes!(i)
         self.class.define_attributes
         set_attributes!(i)
-        set_missing_defaults
       end
 
       def to_hash
-        self.class.attribute_set.each.with_object({}) do |(k,v),memo|
+        if self.class.__hash_rep == :partial
+          @__touched_keys
+        else
+          self.class.attribute_set.keys
+        end.each.with_object({}) do |k,memo|
           memo[k] = send(k)
         end
       end
 
       private
       def require_attributes!(input_hash)
+        # Check for missing required attributes
         required = self.class.attribute_set.map{|name,options| name if options[:required]}.compact
         missing  = (required - input_hash.keys)
         if missing.any?
           raise ArgumentError, "Missing required attributes: #{missing.inspect}"
         end
-      end
 
-      def set_attributes!(input_hash)
-        input_hash.each do |k,v|
-          if self.class.__undef_attr == :raise
-            raise ArgumentError, "Undefined attribute: #{k}" unless respond_to?("#{k}=")
-          end
-          send "#{k}=", v if respond_to?("#{k}=")
+        # Check for unallowed extra attributes
+        if self.class.__undef_attr == :raise
+          extra = (input_hash.keys - self.class.attribute_set.keys)
+          raise ArgumentError, "Undefined attribute(s): #{extra.join(',')}" if extra.any?
         end
       end
 
-      def set_missing_defaults
-        self.class.attribute_set.each do |name, options|
-          default = options[:default]
-          unless default.nil?
-            send("#{name}=",default) if send(name).nil?
-          end
+      def set_attributes!(input_hash)
+        self.class.attribute_set.each do |a, opts|
+          val = input_hash[a] || opts[:default]
+          send "#{a}=", val if input_hash.has_key?(a) || !opts[:default].nil?
         end
       end
     end

@@ -15,7 +15,7 @@ describe NForm::Attributes do
       extend NForm::Attributes
       attribute :sample
       attribute :a_date, coerce: :input_to_date
-      attribute :a_string, coerce: proc{|s| s.upcase }
+      attribute :a_string, coerce: proc{|s| s.upcase if s }
     end
     it "should work with nil input" do
       a = Example.new
@@ -222,6 +222,48 @@ describe NForm::Attributes do
       m = MethodAttribute.new
       m.testchain = "2"
       assert_equal "2.0%", m.testchain
+    end
+  end
+
+  describe "partial representation" do
+    class PatchTest
+      extend NForm::Attributes
+      undefined_attributes :ignore
+      hash_representation :partial
+      attribute :opt_1
+      attribute :opt_2
+      attribute :opt_3
+    end
+
+    it "should not include unset attrs in hash" do
+      p = PatchTest.new
+      assert_equal({}, p.to_hash)
+      p = PatchTest.new(opt_1: "foo")
+      assert_equal({opt_1: "foo"}, p.to_hash)
+    end
+
+    it "should not include bogus keys set when undefined keys are ignored" do
+      p = PatchTest.new(fooey: "bar!")
+      assert_equal({}, p.to_hash)
+    end
+
+    it "should include keys that have been touched" do
+      p = PatchTest.new
+      p.opt_2 = "foo"
+      assert_equal({opt_2: "foo"}, p.to_hash)
+    end
+
+    class PatchTestDefault
+      extend NForm::Attributes
+      hash_representation :partial
+      attribute :optl
+      attribute :deft, default: 1
+    end
+
+    it "should include default values in hash" do
+      p = PatchTestDefault.new
+      h = {deft: 1}
+      assert_equal h, p.to_hash
     end
   end
 end

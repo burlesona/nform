@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'nform'
-  s.version     = '1.0.2'
-  s.date        = '2015-12-14'
+  s.version     = '1.1.0'
+  s.date        = '2016-02-08'
   s.summary     = 'A form / service / view object library.'
   s.description = 'A library for generating composable callable services with form objects and views for handling user input and interaction.'
   s.authors     = ["Andrew Burleson"]

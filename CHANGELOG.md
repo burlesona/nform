@@ -1,5 +1,11 @@
 # NForm Changelog
 
+## 1.1.0
+- New feature on Attributes: `hash_representation`
+  Two options: :complete, or :partial. :complete is the default (for backward compatibility).
+  When :partial is selected, the #to_hash method returns only the keys
+  that have been touched by hash or by using setter methods.
+
 ## 1.0.2
 - Bugfix: In NForm::Service, form_class should be a class instance variable not a class variable.
 
