@@ -108,7 +108,7 @@ module NForm
 
       def set_attributes!(input_hash)
         self.class.attribute_set.each do |a, opts|
-          val = input_hash[a] || opts[:default]
+          val = if input_hash.keys.index(a) then input_hash[a] else opts[:default] end
           send "#{a}=", val if input_hash.has_key?(a) || !opts[:default].nil?
         end
       end
