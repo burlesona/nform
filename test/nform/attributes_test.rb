@@ -16,12 +16,18 @@ describe NForm::Attributes do
       attribute :sample
       attribute :a_date, coerce: :input_to_date
       attribute :a_string, coerce: proc{|s| s.upcase if s }
+      attribute :a_boolean
     end
     it "should work with nil input" do
       a = Example.new
       assert_equal nil, a.sample
       assert_equal nil, a.a_date
       assert_equal nil, a.a_string
+    end
+
+    it "should work with false input (without clobbering nils)" do
+      a = Example.new(a_boolean: false)
+      assert_equal false, a.a_boolean
     end
 
     it "should work with string attrs" do
@@ -42,8 +48,8 @@ describe NForm::Attributes do
     end
 
     it "should return a hash of coerced values" do
-      out = {sample: "Hello", a_date: Date.new(2015,1,1), a_string: nil}
-      a = Example.new sample: "Hello", a_date: {year:2015,month:1,day:1}
+      out = {sample: "Hello", a_date: Date.new(2015,1,1), a_string: nil, a_boolean: true}
+      a = Example.new sample: "Hello", a_date: {year:2015,month:1,day:1}, a_boolean: true
       assert_equal out, a.to_hash
     end
 
