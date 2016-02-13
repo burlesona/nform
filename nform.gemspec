@@ -1,9 +1,9 @@
 Gem::Specification.new do |s|
   s.name        = 'nform'
-  s.version     = '1.1.0'
-  s.date        = '2016-02-08'
-  s.summary     = 'A form / service / view object library.'
-  s.description = 'A library for generating composable callable services with form objects and views for handling user input and interaction.'
+  s.version     = '1.1.1'
+  s.date        = '2016-02-12'
+  s.summary     = 'A form / view / service object library.'
+  s.description = 'A toolbelt for for generating flexible, composable form and view objects.'
   s.authors     = ["Andrew Burleson"]
   s.email       = 'burlesona@gmail.com'
   s.files       = Dir["{lib}/**/*.rb"]

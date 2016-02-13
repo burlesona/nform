@@ -1,5 +1,10 @@
 # NForm Changelog
 
+## 1.1.1
+- Changed the initialize method in Attributes module to be tolerant of literal nil input. Previously it would accept
+  either a hash of attributes or no input, but would not accept a literal nil.
+- Bugfix: fixed case in attributes classes where `false` would get replaced by `nil`.
+
 ## 1.1.0
 - New feature on Attributes: `hash_representation`
   Two options: :complete, or :partial. :complete is the default (for backward compatibility).
