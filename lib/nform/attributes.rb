@@ -72,7 +72,8 @@ module NForm
     end
 
     module InstanceMethods
-      def initialize(input={})
+      def initialize(input=nil)
+        input ||= {}
         @__touched_keys = Set.new
         i = input.symbolize_keys
         require_attributes!(i)

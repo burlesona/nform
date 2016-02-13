@@ -11,6 +11,7 @@ describe NForm::Attributes do
         Date.new(input[:year],input[:month],input[:day])
       end
     end
+
     class Example
       extend NForm::Attributes
       attribute :sample
@@ -18,8 +19,16 @@ describe NForm::Attributes do
       attribute :a_string, coerce: proc{|s| s.upcase if s }
       attribute :a_boolean
     end
+
     it "should work with nil input" do
       a = Example.new
+      assert_equal nil, a.sample
+      assert_equal nil, a.a_date
+      assert_equal nil, a.a_string
+    end
+
+    it "should accept literal nil input" do
+      a = Example.new(nil)
       assert_equal nil, a.sample
       assert_equal nil, a.a_date
       assert_equal nil, a.a_string
